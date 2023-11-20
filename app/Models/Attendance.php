@@ -9,8 +9,6 @@ use App\Models\User;
 use App\Models\BreakTime;
 
 
-
-
 class Attendance extends Model
 {
     use HasFactory;
@@ -42,5 +40,10 @@ class Attendance extends Model
     public function calculateBreakDuration()
     {
         return app(\App\Services\AttendanceService::class)->calculateBreakDuration($this);
+    }
+
+    public function calculateWorkTime()
+    {
+        return app(\App\Services\AttendanceService::class)->calculateWorkTime($this);
     }
 }

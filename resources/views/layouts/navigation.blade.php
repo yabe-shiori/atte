@@ -1,19 +1,19 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false }" class="bg-white">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 pt-2">
 
             <!-- Logo -->
-            <div class="flex text-4xl items-center">
+            <div class="flex text-3xl font-bold items-center">
                 <a href="{{ route('dashboard') }}">
-                    ATTE
+                    Atte
                 </a>
             </div>
 
             <!-- Navigation Links -->
             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                 <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
-                    class="text-sm font-medium text-gray-500 hover:border-b-2 border-gray-300">
+                    class="text-sm font-medium text-gray-800">
                     ホーム
                 </x-nav-link>
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
@@ -22,12 +22,12 @@
                     </x-nav-link>
                     @can('admin')
                         <x-nav-link :href="route('profile.index')" :active="request()->routeIs('profile.index')"
-                            class="text-sm font-medium text-gray-500 hover:border-b-2 border-gray-300">
+                            class="text-sm font-medium text-gray-800">
                             ユーザー一覧
                         </x-nav-link>
                     @endcan
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                        <form class="mt-5" method="post" action="{{ route('logout') }}">
+                        <form class="mt-5 text-sm font-medium text-gray-800" method="post" action="{{ route('logout') }}">
                             @csrf
                             <x-nav-link :href="route('logout')" :active="request()->routeIs('logout')"
                                 onclick="event.preventDefault();
@@ -39,12 +39,12 @@
                 </div>
 
                 <!-- Settings Dropdown -->
-                <div class="hidden sm:flex sm:items-center sm:ms-6">
+                {{-- <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                                <div>{{ optional(Auth::user())->name }}</div>
+                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-600 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                                <div>{{ Auth::user()->name }}さんのマイページ</div>
 
                                 <div class="ms-1">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +74,7 @@
                             </form>
                         </x-slot>
                     </x-dropdown>
-                </div>
+                </div> --}}
 
                 <!-- Hamburger -->
                 <div class="-me-2 flex items-center sm:hidden">

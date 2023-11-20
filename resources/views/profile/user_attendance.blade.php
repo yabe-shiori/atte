@@ -1,16 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl mt-10 text-gray-800 leading-tight">
-            {{ $user->name }}の勤怠情報
+        <h2 class="font-semibold text-lg mt-10 text-gray-800 leading-tight">
+            {{ $user->name }}さんの勤怠情報
         </h2>
-        <x-message :message="session('message')"/>
     </x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="my-6 w-full">
 
             <div class="mb-4 w-1/2">
-                <label for="selectedMonth" class="block text-sm font-medium text-gray-700">月を選択</label>
+                <label for="selectedMonth" class="block text-xs font-normal text-gray-700">月を選択</label>
                 <select id="selectedMonth" name="selectedMonth" class="w-1/4 mt-1 p-2 border border-gray-300 rounded-md">
                     @foreach($months as $month)
                         <option value="{{ $month }}" {{ $month === $selectedMonth ? 'selected' : '' }}>
@@ -21,7 +20,7 @@
             </div>
 
             @foreach($attendancesByMonth as $month => $monthAttendances)
-                <h3 class="text-2xl font-semibold mt-4 mb-2">{{ Carbon\Carbon::parse($month)->format('Y年m月') }}</h3>
+                <h3 class="text-xl font-semibold mt-4 mb-2">{{ Carbon\Carbon::parse($month)->format('Y年m月') }}</h3>
                 <table class="text-left w-full border-collapse mt-2">
                     <thead>
                         <tr class="bg-blue-500 text-white">

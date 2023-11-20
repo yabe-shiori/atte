@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class UserController extends Controller
 {
-    public function showAttendance(User $user, Request $request)
+    public function index(User $user, Request $request)
     {
         // ユーザーに関連する勤怠データを取得
         $attendances = $user->attendance;
@@ -30,3 +30,4 @@ class UserController extends Controller
         return view('profile.user_attendance', compact('user', 'attendancesByMonth', 'months', 'selectedMonth'));
     }
 }
+

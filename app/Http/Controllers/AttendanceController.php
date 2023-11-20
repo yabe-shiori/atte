@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Attendance;
-use App\Models\BreakTime;
 use Illuminate\Support\Facades\Auth;
 use App\Services\AttendanceService;
-use Illuminate\Pagination\Paginator;
-use App\Models\User;
+
 
 class AttendanceController extends Controller
 {
@@ -29,10 +27,9 @@ class AttendanceController extends Controller
         }
     }
 
-    // 勤務開始
+    //出勤処理
     public function startWork()
     {
-        // ログインしているユーザーの情報を取得
         $user = Auth::user();
 
         // 当日の勤怠レコードが存在するか確認
@@ -63,7 +60,7 @@ class AttendanceController extends Controller
         return redirect()->route('dashboard')->with('message', '出勤しました！');
     }
 
-    // 勤務終了
+    //退勤処理
     public function endWork()
     {
         $user = Auth::user();
@@ -77,17 +74,16 @@ class AttendanceController extends Controller
             return redirect()->route('dashboard')->with('error', '本日の勤怠を開始していません。');
         }
 
-        // 勤怠レコードに終了時刻を追加
         $todayAttendance->end_time = now();
         $todayAttendance->save();
         $message = $user->name . 'さん、お疲れさまでした！';
 
         return redirect()->route('dashboard')->with('message', $message);
     }
+
     // 日付別勤怠一覧
     public function attendanceList(Request $request)
     {
-        // 選択された日付を取得
         $selectedDate = $request->input('date', now()->toDateString());
 
         // AttendanceService 経由でデータを取得
@@ -101,13 +97,7 @@ class AttendanceController extends Controller
             ->whereDate('work_date', $selectedDate)
             ->paginate(5);
 
+        // 時間の計算を行ったデータをビューに渡す
         return view('attendance_list', compact('attendancesData', 'attendances', 'selectedDate'));
     }
-    // public function userAttendance(User $user)
-    // {
-    //     $attendances = $user->attendance;
-
-    //     return view('profile/user_attendance', compact('user', 'attendances'));
-    // }
-
 }

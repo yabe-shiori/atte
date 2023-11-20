@@ -5,23 +5,21 @@ namespace App\Services;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Attendance;
+use Illuminate\Support\Collection;
 
 class AttendanceService
 {
-    public function calculateTimes($attendances)
+    public function calculateTimes(Collection $attendances)
     {
-        $calculatedAttendances = [];
-
-        foreach ($attendances as $attendance) {
-            $calculatedAttendance = $attendance;
-            $calculatedAttendance['breakDuration'] = $this->calculateBreakDuration($attendance);
-            $calculatedAttendance['workDuration'] = $this->calculateWorkDuration($attendance);
-            $calculatedAttendances[] = $calculatedAttendance;
-        }
-
-        return $calculatedAttendances;
+        return $attendances->map(function ($attendance) {
+            return array_merge($attendance->toArray(), [
+                'breakDuration' => $this->calculateBreakDuration($attendance),
+                'workDuration' => $this->calculateWorkDuration($attendance),
+            ]);
+        });
     }
 
+    // 勤務開始から勤務終了までの時間を計算
     public function calculateWorkDuration($attendance)
     {
         $start = Carbon::parse($attendance->start_time);
@@ -30,24 +28,41 @@ class AttendanceService
         return $end->diff($start)->format('%H:%I:%S');
     }
 
+    // 休憩時間を計算
     public function calculateBreakDuration($attendance)
     {
         $breakTimes = $attendance->breakTimes;
 
-        // 休憩が存在する場合
         if ($breakTimes->isNotEmpty()) {
-            // 各休憩時間を合計
             $breakDurationInSeconds = $breakTimes->sum(function ($breakTime) {
                 $breakStart = Carbon::parse($breakTime->break_start_time);
                 $breakEnd = $breakTime->break_end_time ? Carbon::parse($breakTime->break_end_time) : now();
                 return $breakStart->diffInSeconds($breakEnd);
             });
 
-            // 合計秒数を時分秒形式にフォーマットして返す
             return $this->formatDuration($breakDurationInSeconds);
-        } else {
-            return '00:00:00';
         }
+
+        return '00:00:00';
+    }
+
+    // 勤務時間を計算
+    public function calculateWorkTime($attendance)
+    {
+        $start = Carbon::parse($attendance->start_time);
+        $end = Carbon::parse($attendance->end_time);
+        $breakTimes = $attendance->breakTimes;
+
+        $breakDuration = $breakTimes->isNotEmpty() ? $this->calculateBreakDuration($attendance) : '00:00:00';
+
+        $workDurationInSeconds = max(0, $end->diffInSeconds($start) - $this->parseDuration($breakDuration));
+        return $this->formatDuration($workDurationInSeconds);
+    }
+
+    private function parseDuration($duration)
+    {
+        list($hours, $minutes, $seconds) = explode(':', $duration);
+        return $hours * 3600 + $minutes * 60 + $seconds;
     }
 
     private function formatDuration($seconds)
@@ -79,7 +94,6 @@ class AttendanceService
             ->groupBy('users.name', 'attendances.work_date', 'attendances.start_time', 'attendances.end_time', 'attendances.user_id')
             ->get()
             ->map(function ($attendance) {
-
                 $attendance->break_start_time = $attendance->min_break_start_time;
                 $attendance->break_end_time = $attendance->max_break_end_time;
                 $attendance->breakDuration = $this->calculateBreakDuration($attendance);
