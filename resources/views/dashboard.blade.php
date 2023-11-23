@@ -24,28 +24,28 @@
                 <div class="w-full md:w-1/2">
                     <form method="post" action="{{ route('start-work') }}">
                         @csrf
-                    <button type="submit" class="mx-2 mb-8 bg-gray-300 hover:opacity-60 text-black text-xl h-56 w-full md:w-11/12 md:mx-auto">勤務開始</button>
+                    <button type="submit" class="mx-2 mb-8 bg-white hover:opacity-60 text-black text-xl h-56 w-full md:w-11/12 md:mx-auto">勤務開始</button>
                     </form>
                 </div>
 
                 <div class="w-full md:w-1/2">
                     <form method="post" action="{{ route('end-work') }}">
                         @csrf
-                    <button type="submit" class="mx-2 mb-8 bg-gray-300 hover:opacity-60 text-black text-xl h-56 w-full md:w-11/12 md:mx-auto">勤務終了</button>
+                    <button type="submit" class="mx-2 mb-8 bg-white hover:opacity-60 text-black text-xl h-56 w-full md:w-11/12 md:mx-auto">勤務終了</button>
                     </form>
                 </div>
 
                 <div class="w-full md:w-1/2">
                     <form method="post" action="{{ route('start-break') }}">
                         @csrf
-                    <button type="submit" class="mx-2 mb-4 bg-gray-300 hover:opacity-60 text-black text-xl h-56 w-full md:w-11/12 md:mx-auto">休憩開始</button>
+                    <button type="submit" class="mx-2 mb-4 bg-white hover:opacity-60 text-black text-xl h-56 w-full md:w-11/12 md:mx-auto">休憩開始</button>
                     </form>
                 </div>
 
                 <div class="w-full md:w-1/2">
                     <form method="post" action="{{ route('end-break') }}">
                         @csrf
-                    <button type="submit" class="mx-2 mb-4 bg-gray-300 text-black hover:opacity-60 text-xl h-56 w-full md:w-11/12 md:mx-auto">休憩終了</button>
+                    <button type="submit" class="mx-2 mb-4 bg-white text-black hover:opacity-60 text-xl h-56 w-full md:w-11/12 md:mx-auto">休憩終了</button>
                     </form>
                 </div>
             </div>

@@ -25,8 +25,10 @@
                                 {{ \Carbon\Carbon::parse($attendance->start_time)->format('H:i:s') }}</td>
                             <td class="px-4 py-3 border-t-2 border-y-gray-300">
                                 {{ \Carbon\Carbon::parse($attendance->end_time)->format('H:i:s') }}</td>
-                            <td class="px-4 py-3 border-t-2 border-y-gray-300">{{ $attendance->calculateBreakDuration() }}</td>
-                            <td class="px-4 py-3 border-t-2 border-y-gray-300">{{ $attendance->calculateWorkTime() }}</td>
+                            <td class="px-4 py-3 border-t-2 border-y-gray-300">
+                                {{ $attendance->calculateBreakDuration() }}</td>
+                            <td class="px-4 py-3 border-t-2 border-y-gray-300">{{ $attendance->calculateWorkTime() }}
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
