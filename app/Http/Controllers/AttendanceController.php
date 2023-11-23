@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\AttendanceService;
 
 
+
 class AttendanceController extends Controller
 {
     protected $attendanceService;
@@ -57,9 +58,13 @@ class AttendanceController extends Controller
         $attendance->work_date = now()->toDateString();
         $attendance->save();
 
-        return redirect()->route('dashboard')->with('message', '出勤しました！');
-    }
+        $userModel = \App\Models\User::find($user->id);
+        $userModel->update(['work_started' => true]);
+        // $user->work_started = true;
+        // $user->save();
 
+        return redirect()->route('dashboard')->with(['user' => $user, 'message' => '出勤しました！']);
+    }
     //退勤処理
     public function endWork()
     {
@@ -77,6 +82,11 @@ class AttendanceController extends Controller
         $todayAttendance->end_time = now();
         $todayAttendance->save();
         $message = $user->name . 'さん、お疲れさまでした！';
+
+        $userModel = \App\Models\User::find($user->id);
+        $userModel->update(['work_started' => false]);
+        // $user->work_started = false;
+        // $user->save();
 
         return redirect()->route('dashboard')->with('message', $message);
     }
