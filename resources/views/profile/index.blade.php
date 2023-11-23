@@ -18,16 +18,16 @@
                 </tr>
                 @foreach ($users as $user)
                     <tr class="bg-white">
-                        <td class="border-gray-light border hover:bg-gray-100 p-3">{{ $user->id }}</td>
-                        <td class="border-gray-light border hover:bg-gray-100 p-3">{{ $user->name }}</td>
-                        <td class="border-gray-light border hover:bg-gray-100 p-3">{{ $user->email }}</td>
-                        <td class="border-gray-light border hover:bg-gray-100 p-3">
+                        <td class="border-gray-light border p-3">{{ $user->id }}</td>
+                        <td class="border-gray-light border p-3">{{ $user->name }}</td>
+                        <td class="border-gray-light border p-3">{{ $user->email }}</td>
+                        <td class="border-gray-light border p-3">
                             <a href="{{ route('profile.adedit', $user) }}"><x-primary-button
-                                    class="bg-gray-600">編集</x-primary-button></a>
+                                    class="bg-zinc-400">編集</x-primary-button></a>
                         </td>
-                        <td class="border-gray-light border hover:bg-gray-100 p-3">
+                        <td class="border-gray-light border p-3">
                             <a href="{{ route('user-attendance', ['user' => $user->id]) }}">
-                                <x-primary-button class="bg-green-600">勤怠情報</x-primary-button>
+                                <x-primary-button class="bg-teal-600">勤怠情報</x-primary-button>
                             </a>
                         </td>
                     </tr>
