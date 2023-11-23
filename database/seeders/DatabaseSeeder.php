@@ -15,8 +15,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // $this->call(RolesTableSeeder::class);
-
         // User::factory(10)->create();
         // Attendance::factory(30)->create();
         BreakTime::factory(30)->create();

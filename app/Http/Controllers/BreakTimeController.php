@@ -15,12 +15,6 @@ class BreakTimeController extends Controller
     // 休憩時間保存処理
     public function store(Request $request)
     {
-        // データの検証（例：attendance_idが必須であると仮定）
-        // $request->validate([
-        //     'attendance_id' => 'required',
-        //     // 他にも必要なバリデーションルールを追加
-        // ]);
-
         // 勤怠レコードが終了している場合は休憩開始を許可しない
         if ($this->isWorkEnded()) {
             return redirect()->route('dashboard')->with('error', '勤務が終了しています。');

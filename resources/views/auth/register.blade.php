@@ -56,7 +56,7 @@
                 </x-primary-button>
                 <div class="text-center mb-4">
                     <a class="text-blue-500 hover:underline text-base hover:text-blue-700" href="{{ route('login') }}">
-                        <p class="text-center text-gray-400">アカウントをお持ちの方はこちらから</p>
+                        <p class="text-center text-zinc-400">アカウントをお持ちの方はこちらから</p>
                         {{ __('ログイン') }}
                     </a>
                 </div>

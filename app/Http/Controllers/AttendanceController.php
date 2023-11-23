@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\AttendanceService;
 
 
-
 class AttendanceController extends Controller
 {
     protected $attendanceService;

@@ -43,7 +43,7 @@
         </div>
         <div class="text-center mb-4">
             <a class="text-blue-500 hover:underline text-base hover:text-blue-700" href="{{ route('register') }}">
-                <p class="text-center text-gray-400">アカウントをお持ちでない方はこちらから</p>
+                <p class="text-center text-zinc-400">アカウントをお持ちでない方はこちらから</p>
                 {{ __('会員登録') }}
             </a>
         </div>

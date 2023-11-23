@@ -43,6 +43,8 @@ Route::middleware('auth')->group(function () {
         ->name('start-break');
     Route::post('/end-break', [BreakTimeController::class, 'endBreak'])
         ->name('end-break');
+    // 休憩時間保存処理
+    Route::post('/break-time/store', [BreakTimeController::class, 'store'])->name('break-time.store');
     // 勤怠一覧画面
     Route::get('/attendance', [AttendanceController::class, 'attendanceList'])
         ->name('attendance-list');

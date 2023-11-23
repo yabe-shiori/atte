@@ -29,7 +29,7 @@ class UserController extends Controller
         $selectedMonth = $request->input('selectedMonth') ?? $months->first();
 
         // ビューにユーザーと月ごとの勤怠情報を渡す
-        return view('profile.user_attendance', compact('user', 'attendancesByMonth', 'months', 'selectedMonth'));
+        return view('profile.user-attendance', compact('user', 'attendancesByMonth', 'months', 'selectedMonth'));
     }
 }
 
