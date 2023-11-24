@@ -29,7 +29,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    //打刻
+    //打刻画面
     Route::get('/', [AttendanceController::class, 'index'])
         ->name('dashboard');
     //出勤
@@ -38,30 +38,35 @@ Route::middleware('auth')->group(function () {
     //退勤
     Route::post('/end-work', [AttendanceController::class, 'endWork'])
         ->name('end-work');
-    //休憩
+    //休憩開始
     Route::post('/start-break', [BreakTimeController::class, 'startBreak'])
         ->name('start-break');
+    //休憩終了
     Route::post('/end-break', [BreakTimeController::class, 'endBreak'])
         ->name('end-break');
     // 休憩時間保存処理
-    Route::post('/break-time/store', [BreakTimeController::class, 'store'])->name('break-time.store');
+    Route::post('/break-time/store', [BreakTimeController::class, 'store'])
+        ->name('break-time.store');
     // 勤怠一覧画面
     Route::get('/attendance', [AttendanceController::class, 'attendanceList'])
         ->name('attendance-list');
     //自分のプロフィールの編集更新
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+    //自分の勤怠情報を表示
+    Route::get('mypage/attendance/{user}', [UserController::class, 'myAttendance'])
+        ->name('my-attendance');
 });
 
 
-//管理者のみ
+//管理者のみアクセス可能
 Route::middleware(['auth', 'can:admin'])->group(function () {
     // ユーザー一覧画面
-    Route::get('profile/index', [ProfileController::class, 'index'])
-        ->name('profile.index');
+    Route::get('admin/index', [ProfileController::class, 'index'])
+        ->name('admin.index');
     //ユーザー情報編集
-    //管理者がユーザーのプロフィールを編集
     Route::get('/profile/adedit/{user}', [ProfileController::class, 'adedit'])
         ->name('profile.adedit');
     Route::patch('/profile/adupdate/{user}', [ProfileController::class, 'adupdate'])
@@ -73,7 +78,7 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
     Route::patch('roles/{user}/detach', [RoleController::class, 'detach'])
         ->name('role.detach');
     //ユーザーごとの勤怠表示
-    Route::get('profile/user-attendance/{user}', [UserController::class, 'index'])
+    Route::get('admin/user-attendance/{user}', [UserController::class, 'index'])
         ->name('user-attendance');
 });
 
