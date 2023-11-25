@@ -46,14 +46,16 @@ class BreakTimeController extends Controller
             return redirect()->route('dashboard')->with('error', '既に休憩が開始されています。');
         }
 
+        // ユーザーの break_started カラムを更新
+        $user = Auth::user();
+        $user->break_started = true;
+        $user->save();
+
         // 休憩レコードを作成
         $breakTime = new BreakTime();
         $breakTime->attendance_id = $this->getTodayAttendance()->id;
         $breakTime->break_start_time = now();
         $breakTime->save();
-
-        // 休憩開始の状態をセット
-        session(['break_started' => true]);
 
         return redirect()->route('dashboard')->with('message', '休憩を開始しました。');
     }
@@ -73,12 +75,14 @@ class BreakTimeController extends Controller
             return redirect()->route('dashboard')->with('error', '休憩が開始されていません。');
         }
 
+        // ユーザーの break_started カラムを更新
+        $user = Auth::user();
+        $user->break_started = false;
+        $user->save();
+
         // 休憩終了時刻を更新
         $todayBreakTime->break_end_time = now();
         $todayBreakTime->save();
-
-        // 休憩終了の状態をリセット
-        session(['break_started' => false]);
 
         return redirect()->route('dashboard')->with('message', '休憩を終了しました。');
     }
@@ -86,7 +90,9 @@ class BreakTimeController extends Controller
     // 休憩が開始されているかどうかを判定
     private function isBreakStarted()
     {
-        return session('break_started', false);
+        // ユーザーの break_started カラムが true かどうかをチェック
+        $user = Auth::user();
+        return $user->break_started;
     }
 
 

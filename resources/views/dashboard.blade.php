@@ -26,8 +26,10 @@
                         @csrf
                         <button type="submit"
                             class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
-        {{ isset($user) && $user->work_started ? 'text-zinc-300' : 'text-black' }}
-        {{ isset($user) && $user->work_started ? '' : 'hover:opacity-60' }}">
+        @if (Auth::check() && Auth::user()->work_started) text-zinc-300
+        @else
+            text-black @if (Auth::check() && !Auth::user()->work_started) hover:opacity-60 @endif
+        @endif">
                             勤務開始
                         </button>
                     </form>
@@ -46,7 +48,10 @@
                         @csrf
                         <button type="submit"
                             class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
-        @if (Session::get('break_started')) text-zinc-300 @else text-black hover:opacity-60 @endif">
+        @if (Auth::check() && Auth::user()->break_started) text-zinc-300
+        @else
+            text-black @if (Auth::check() && !Auth::user()->break_started) hover:opacity-60 @endif
+        @endif">
                             休憩開始
                         </button>
                     </form>

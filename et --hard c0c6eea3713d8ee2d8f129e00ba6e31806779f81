@@ -1,0 +1,59 @@
+[33mcommit c0c6eea3713d8ee2d8f129e00ba6e31806779f81[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: yabe shiori <sh_0418_ty@yahoo.co.jp>
+Date:   Fri Nov 24 15:45:10 2023 +0900
+
+    Create view for mypage
+
+[33mcommit 835198fad7be0f23901f75876bb9e8c1785a34ca[m
+Author: yabe shiori <sh_0418_ty@yahoo.co.jp>
+Date:   Fri Nov 24 07:13:55 2023 +0900
+
+    Conducted testing for AttendanceController.
+
+[33mcommit fe6fbb41307037954f9ae13deafb34e16cfca7a5[m
+Author: yabe shiori <sh_0418_ty@yahoo.co.jp>
+Date:   Thu Nov 23 13:50:20 2023 +0900
+
+    Add work_started column to Users table
+
+[33mcommit 9feba5b85820af10b8e6054d6dbcaea1f0985112[m
+Author: yabe shiori <sh_0418_ty@yahoo.co.jp>
+Date:   Thu Nov 23 12:05:41 2023 +0900
+
+    chore: Modify layout of index.blade.php
+
+[33mcommit a721a5f3b6f43d8b608eec2f4b6b09f684bcbaa9[m
+Author: yabe shiori <sh_0418_ty@yahoo.co.jp>
+Date:   Thu Nov 23 10:25:51 2023 +0900
+
+    chore: Adjust layout of the select box
+
+[33mcommit 321ce1cdaa6554fc833bf4c8622182f9e9e513da[m
+Author: yabe shiori <sh_0418_ty@yahoo.co.jp>
+Date:   Thu Nov 23 10:12:26 2023 +0900
+
+    update AttendanceServie.php
+
+[33mcommit c85b405b6d93fb8732f6c46d509c93402cdb4dc3[m
+Author: yabe shiori <sh_0418_ty@yahoo.co.jp>
+Date:   Thu Nov 23 08:47:03 2023 +0900
+
+    create_factory
+
+[33mcommit 10701718cadbc51bb3f52ea1b8081e39a21e8179[m
+Author: yabe shiori <sh_0418_ty@yahoo.co.jp>
+Date:   Tue Nov 21 07:53:26 2023 +0900
+
+    全体のレイアウト変更
+
+[33mcommit a4db3ffc551466fce46bf73b179933ec9b4e8257[m
+Author: yabe shiori <sh_0418_ty@yahoo.co.jp>
+Date:   Sun Nov 19 19:28:01 2023 +0900
+
+    first commit
+
+[33mcommit f28eb080a93b93b49c2060e01d5003b4c7e22da7[m
+Author: yabe shiori <sh_0418_ty@yahoo.co.jp>
+Date:   Sun Nov 19 19:25:51 2023 +0900
+
+    first commit

@@ -42,6 +42,7 @@ class User extends Authenticatable
         'email',
         'password',
         'work_started',
+        'break_started',
     ];
 
     /**

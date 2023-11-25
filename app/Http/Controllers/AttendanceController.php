@@ -62,7 +62,7 @@ class AttendanceController extends Controller
         // $user->work_started = true;
         // $user->save();
 
-        return redirect()->route('dashboard')->with(['user' => $user, 'message' => '出勤しました！']);
+        return redirect()->route('dashboard')->with('message', '出勤しました！');
     }
     //退勤処理
     public function endWork()
