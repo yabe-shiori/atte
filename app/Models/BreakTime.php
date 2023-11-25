@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Attendance;
 use Carbon\Carbon;
-use App\Models\User;
 
 
 class BreakTime extends Model
@@ -23,10 +22,6 @@ class BreakTime extends Model
     {
         return $this->belongsTo(Attendance::class);
     }
-    // public function user()
-    // {
-    //     return $this->belongsTo(User::class);
-    // }
 
 }
 

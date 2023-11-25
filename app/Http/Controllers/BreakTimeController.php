@@ -12,41 +12,36 @@ use App\Models\User;
 
 class BreakTimeController extends Controller
 {
-    // 休憩時間保存処理
+
     public function store(Request $request)
     {
-        // 勤怠レコードが終了している場合は休憩開始を許可しない
+
         if ($this->isWorkEnded()) {
             return redirect()->route('dashboard')->with('error', '勤務が終了しています。');
         }
 
-        // 休憩レコードを作成
         $breakTime = new BreakTime([
             'attendance_id' => $request->input('attendance_id'),
             'break_start_time' => $request->input('break_start_time'),
             'break_end_time' => $request->input('break_end_time'),
         ]);
 
-        // 休憩時間を保存
         $breakTime->save();
 
-        // 適切なリダイレクトなどを行う
         return redirect()->route('dashboard');
     }
 
     public function startBreak()
     {
-        // 勤怠レコードが終了している場合は休憩開始を許可しない
+
         if ($this->isWorkEnded()) {
             return redirect()->route('dashboard')->with('error', '勤務が終了しています。');
         }
 
-        // 既に開始されている休憩があるか確認
         if ($this->isBreakStarted()) {
             return redirect()->route('dashboard')->with('error', '既に休憩が開始されています。');
         }
 
-        // ユーザーの break_started カラムを更新
         $user = Auth::user();
         $user->break_started = true;
         $user->save();
@@ -63,19 +58,16 @@ class BreakTimeController extends Controller
     // 休憩終了ボタンがクリックされたときの処理
     public function endBreak()
     {
-        // 勤怠レコードが終了している場合は休憩終了を許可しない
         if ($this->isWorkEnded()) {
             return redirect()->route('dashboard')->with('error', '勤務が終了しています。');
         }
 
-        // 休憩が開始されていない場合
         $todayBreakTime = $this->getLatestBreakTime();
 
         if (!$todayBreakTime || $todayBreakTime->break_end_time !== null) {
             return redirect()->route('dashboard')->with('error', '休憩が開始されていません。');
         }
 
-        // ユーザーの break_started カラムを更新
         $user = Auth::user();
         $user->break_started = false;
         $user->save();
@@ -90,7 +82,6 @@ class BreakTimeController extends Controller
     // 休憩が開始されているかどうかを判定
     private function isBreakStarted()
     {
-        // ユーザーの break_started カラムが true かどうかをチェック
         $user = Auth::user();
         return $user->break_started;
     }
@@ -104,7 +95,6 @@ class BreakTimeController extends Controller
         return $todayAttendance && $todayAttendance->end_time !== null;
     }
 
-    // 当日の勤怠レコードを取得
     private function getTodayAttendance()
     {
         $user = Auth::user();
@@ -114,13 +104,12 @@ class BreakTimeController extends Controller
             ->first();
     }
 
-    // 当日の最後の休憩レコードを取得
     private function getLatestBreakTime()
     {
         $todayAttendance = $this->getTodayAttendance();
 
         if ($todayAttendance) {
-            // 最後の休憩レコードを取得
+
             $latestBreakTime = $todayAttendance->breakTimes()->latest()->first();
 
             return $latestBreakTime ?? null;

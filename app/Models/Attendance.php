@@ -25,10 +25,12 @@ class Attendance extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     public function breakTimes()
     {
         return $this->hasMany(BreakTime::class);
     }
+    
     public function calculateWorkDuration()
     {
         $start = Carbon::parse($this->start_time);

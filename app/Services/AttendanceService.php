@@ -102,5 +102,4 @@ class AttendanceService
                 return $attendance;
             });
     }
-    
 }

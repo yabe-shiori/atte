@@ -12,46 +12,42 @@ class UserController extends Controller
 
     public function index(User $user, Request $request)
     {
-        // ユーザーに関連する勤怠データを取得
         $attendances = $user->attendance;
+        list($attendancesByMonth, $months, $selectedMonth) = $this->processAttendanceData($attendances, $request);
 
-        // 勤怠データを月ごとにグループ化
-        $attendancesByMonth = $attendances->groupBy(function ($attendance) {
-            return Carbon::parse($attendance->work_date)->format('Y-m');
-        });
-
-        // 月の選択ボックス用のデータを作成
-        $months = $attendances->pluck('work_date')->unique()->map(function ($date) {
-            return Carbon::parse($date)->format('Y-m');
-        });
-
-        // 選択された月があればその月のデータを、なければ最初の月のデータを表示
-        $selectedMonth = $request->input('selectedMonth') ?? $months->first();
-
-        // ビューにユーザーと月ごとの勤怠情報を渡す
         return view('admin.user-attendance', compact('user', 'attendancesByMonth', 'months', 'selectedMonth'));
     }
 
     public function myAttendance(User $user, Request $request)
     {
-        // ユーザーに関連する勤怠データを取得
         $attendances = $user->attendance;
+        list($attendancesByMonth, $months, $selectedMonth) = $this->processAttendanceData($attendances, $request);
 
-        // 勤怠データを月ごとにグループ化
+        return view('mypage.my-attendance', compact('user', 'attendancesByMonth', 'months', 'selectedMonth'));
+    }
+
+    private function processAttendanceData($attendances, $request)
+    {
         $attendancesByMonth = $attendances->groupBy(function ($attendance) {
             return Carbon::parse($attendance->work_date)->format('Y-m');
         });
 
-        // 月の選択ボックス用のデータを作成
         $months = $attendances->pluck('work_date')->unique()->map(function ($date) {
             return Carbon::parse($date)->format('Y-m');
         });
 
-        // 選択された月があればその月のデータを、なければ最初の月のデータを表示
-        $selectedMonth = $request->input('selectedMonth') ?? $months->first();
+        // 年月を新しい順にソート
+        $months = $months->sort(function ($a, $b) {
+            return Carbon::parse($b)->getTimestamp() - Carbon::parse($a)->getTimestamp();
+        });
 
-        // ビューにユーザーと月ごとの勤怠情報を渡す
-        return view('mypage.my-attendance', compact('user', 'attendancesByMonth', 'months', 'selectedMonth'));
+        // 最新の月を取得
+        $latestMonth = $months->first();
+
+        // 選択された月があればその月のデータを、なければ最新の月のデータを表示
+        $selectedMonth = $request->input('selectedMonth', $latestMonth);
+
+        return [$attendancesByMonth, $months, $selectedMonth];
     }
 }
 

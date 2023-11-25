@@ -21,5 +21,3 @@ class RoleController extends Controller
         return back();
     }
 }
-
-

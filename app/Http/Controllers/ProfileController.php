@@ -78,6 +78,7 @@ class ProfileController extends Controller
             'roles' => $roles,
         ]);
     }
+    
     public function adupdate(User $user, Request $request)
     {
         $inputs = $request->validate([
