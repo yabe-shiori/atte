@@ -43,13 +43,11 @@ class BreakTimeController extends Controller
 
         $user = Auth::user();
 
-        // Get today's attendance
         $todayAttendance = $this->getTodayAttendance();
 
-        // Check if attendance is null
         if ($todayAttendance === null) {
-            // Handle the case where today's attendance is null (perhaps redirect with an error message)
-            return redirect()->route('dashboard')->with('error', '本日の勤務が開始されていません。');
+
+            return redirect()->route('dashboard')->with('error', '勤務が開始されていません。');
         }
 
         $user->break_started = true;

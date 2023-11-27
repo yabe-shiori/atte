@@ -35,6 +35,6 @@
             </table>
 
         </div>
-        {{ $attendances->links('vendor.pagination.tailwind2') }}
+        {{ $attendances->appends(['date' => $selectedDate])->links('vendor.pagination.tailwind2') }}
     </div>
 </x-app-layout>
