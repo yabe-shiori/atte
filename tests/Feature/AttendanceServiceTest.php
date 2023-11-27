@@ -79,7 +79,6 @@ class AttendanceServiceTest extends TestCase
     }
     public function testGetAttendancesByDate()
     {
-        // Create test data
         $user1 = User::factory()->create(['name' => 'User 1']);
         $user2 = User::factory()->create(['name' => 'User 2']);
 

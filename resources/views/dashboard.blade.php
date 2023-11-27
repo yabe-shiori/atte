@@ -9,14 +9,12 @@
         <div class="text-center h-3/4">
             <x-message :message="session('message')" />
 
-            {{-- エラーメッセージを表示 --}}
             @if (session('error'))
                 <div class="border mb-4 px-4 py-3 rounded relative bg-red-100 border-red-400 text-red-700">
                     {{ session('error') }}
                 </div>
             @endif
 
-            {{-- メッセージとエラーメッセージがない場合は、下に余白を作る --}}
             @unless (session('message') || session('error'))
                 <div class="mb-16"></div>
             @endunless

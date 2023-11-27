@@ -31,7 +31,6 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
-        // 前日の出勤データを取得
         $yesterdayAttendance = $user->attendance()
             ->whereDate('work_date', now()->subDay()->toDateString())
             ->first();
