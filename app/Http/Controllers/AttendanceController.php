@@ -21,11 +21,13 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
         if ($user) {
-            return view('dashboard', ['user' => $user,]);
+            $workStatus = $user->work_started;
+            return view('dashboard', ['user' => $user, 'workStatus' => $workStatus]);
         } else {
             return view('auth.login');
         }
     }
+
 
     public function startWork()
     {

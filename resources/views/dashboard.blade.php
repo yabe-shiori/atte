@@ -37,7 +37,10 @@
                     <form method="post" action="{{ route('end-work') }}">
                         @csrf
                         <button type="submit"
-                            class="mx-2 mb-8 bg-white hover:opacity-60 text-black text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto">勤務終了</button>
+                            class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
+            @if (!Auth::check() || (Auth::check() && !Auth::user()->work_started)) text-zinc-300 @else text-black @endif">
+                            勤務終了
+                        </button>
                     </form>
                 </div>
 
@@ -46,10 +49,9 @@
                         @csrf
                         <button type="submit"
                             class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
-        @if (Auth::check() && Auth::user()->break_started) text-zinc-300
-        @else
-            text-black @if (Auth::check() && !Auth::user()->break_started) hover:opacity-60 @endif
-        @endif">
+            @if (Auth::check() && Auth::user()->work_started && !Auth::user()->break_started) text-black
+            @else text-zinc-300 @if (Auth::check() && !Auth::user()->work_started) hover:opacity-60 @endif
+            @endif">
                             休憩開始
                         </button>
                     </form>
@@ -59,7 +61,11 @@
                     <form method="post" action="{{ route('end-break') }}">
                         @csrf
                         <button type="submit"
-                            class="mx-2 mb-4 bg-white text-black hover:opacity-60 text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto">休憩終了</button>
+                            class="mx-2 mb-4 bg-white
+                @if (!Auth::check() || (Auth::check() && !Auth::user()->break_started)) text-zinc-300 @else text-black hover:opacity-60 @endif
+                text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto">
+                            休憩終了
+                        </button>
                     </form>
                 </div>
             </div>
