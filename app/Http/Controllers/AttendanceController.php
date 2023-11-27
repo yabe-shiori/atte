@@ -31,6 +31,24 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
+        // 前日の出勤データを取得
+        $yesterdayAttendance = $user->attendance()
+            ->whereDate('work_date', now()->subDay()->toDateString())
+            ->first();
+
+        if ($yesterdayAttendance && !$yesterdayAttendance->end_time) {
+            $attendance = new Attendance();
+            $attendance->user_id = $user->id;
+            $attendance->start_time = now();
+            $attendance->work_date = now()->toDateString();
+            $attendance->save();
+
+            $user = \App\Models\User::find($user->id);
+            $user->update(['work_started' => true]);
+
+            return redirect()->route('dashboard')->with('message', '前日の勤務終了が押されていませんが、新しい勤務を開始しました。');
+        }
+
         $todayAttendance = $user->attendance()->whereDate('start_time', now()->toDateString())->first();
 
         if ($todayAttendance) {
@@ -52,8 +70,8 @@ class AttendanceController extends Controller
         $attendance->work_date = now()->toDateString();
         $attendance->save();
 
-        $userModel = \App\Models\User::find($user->id);
-        $userModel->update(['work_started' => true]);
+        $user = \App\Models\User::find($user->id);
+        $user->update(['work_started' => true]);
 
         return redirect()->route('dashboard')->with('message', '出勤しました！');
     }

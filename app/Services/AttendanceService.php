@@ -59,13 +59,13 @@ class AttendanceService
         return $this->formatDuration($workDurationInSeconds);
     }
 
-    private function parseDuration($duration)
+    public function parseDuration($duration)
     {
         list($hours, $minutes, $seconds) = explode(':', $duration);
         return $hours * 3600 + $minutes * 60 + $seconds;
     }
 
-    private function formatDuration($seconds)
+    public function formatDuration($seconds)
     {
         $hours = floor($seconds / 3600);
         $minutes = floor(($seconds / 60) % 60);
