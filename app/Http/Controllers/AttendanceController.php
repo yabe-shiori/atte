@@ -28,27 +28,10 @@ class AttendanceController extends Controller
         }
     }
 
-
     public function startWork()
     {
         $user = Auth::user();
 
-    //   $yesterdayAttendance = $user->attendance()
-    //         ->whereDate('work_date', now()->subDay()->toDateString())
-    //         ->first();
-
-    //     if ($yesterdayAttendance && !$yesterdayAttendance->end_time) {
-    //         $attendance = new Attendance();
-    //         $attendance->user_id = $user->id;
-    //         $attendance->start_time = now();
-    //         $attendance->work_date = now()->toDateString();
-    //         $attendance->save();
-
-    //         $user = \App\Models\User::find($user->id);
-    //         $user->update(['work_started' => true]);
-
-    //         return redirect()->route('dashboard')->with('message', '前日の勤務終了が押されていませんが、新しい勤務を開始しました。');
-    //     }
         $todayAttendance = $user->attendance()->whereDate('start_time', now()->toDateString())->first();
 
         if ($todayAttendance) {
@@ -65,6 +48,8 @@ class AttendanceController extends Controller
 
         if ($crossedMidnight) {
             $attendance->crossed_midnight = true;
+
+            $attendance->end_time = null;
         }
 
         $attendance->work_date = now()->toDateString();
@@ -80,7 +65,6 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
-        // 本日の未完了の勤務がある場合、それを終了させる
         $todayAttendance = $user->attendance()
             ->whereDate('work_date', now()->toDateString())
             ->whereNull('end_time')
@@ -97,15 +81,13 @@ class AttendanceController extends Controller
             return redirect()->route('dashboard')->with('message', $message);
         }
 
-        // 本日の未完了の勤務がない場合、エラーメッセージを表示する
-        return redirect()->route('dashboard')->with('error', '本日の勤務を終了していません。');
+        return redirect()->route('dashboard')->with('error', '勤務が開始されていません。');
     }
-    // 日付別勤怠一覧
+
     public function attendanceList(Request $request)
     {
         $selectedDate = $request->input('date', now()->toDateString());
 
-        // ページネーションの設定前に全体のデータ数を取得
         $totalAttendances = Attendance::whereDate('work_date', $selectedDate)->count();
 
         $attendances = Attendance::with('user', 'breakTimes')
@@ -115,4 +97,3 @@ class AttendanceController extends Controller
         return view('attendance_list', compact('attendances', 'selectedDate', 'totalAttendances'));
     }
 }
-
