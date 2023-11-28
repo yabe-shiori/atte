@@ -21,19 +21,8 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
-        // 過去の最新の出勤データを取得
-        $latestAttendance = $user->attendance()
-            ->latest('work_date')
-            ->first();
-
-        $workStarted = $latestAttendance ? !is_null($latestAttendance->start_time) : false;
-        $workEnded = $latestAttendance ? !is_null($latestAttendance->end_time) : false;
-
         return view('dashboard', [
             'user' => $user,
-            'latestAttendance' => $latestAttendance,
-            'workStarted' => $workStarted,
-            'workEnded' => $workEnded,
         ]);
     }
     public function startWork()
@@ -63,8 +52,8 @@ class AttendanceController extends Controller
         $attendance->work_date = now()->toDateString();
         $attendance->save();
 
-        // $userModel = \App\Models\User::find($user->id);
-        // // $userModel->update(['work_started' => true]);
+        $userModel = \App\Models\User::find($user->id);
+        $userModel->update(['work_started' => true]);
 
         return redirect()->route('dashboard')->with('message', '出勤しました！');
     }
@@ -78,7 +67,6 @@ class AttendanceController extends Controller
             ->whereNull('end_time')
             ->first();
 
-        //休憩が終了されているか
         if ($todayAttendance) {
 
             $breaks = $todayAttendance->breakTimes;
@@ -92,8 +80,8 @@ class AttendanceController extends Controller
             $todayAttendance->save();
             $message = $user->name . 'さん、お疲れさまでした！';
 
-            // $userModel = \App\Models\User::find($user->id);
-            // $userModel->update(['work_started' => false]);
+            $userModel = \App\Models\User::find($user->id);
+            $userModel->update(['work_started' => false]);
 
             return redirect()->route('dashboard')->with('message', $message);
         }
