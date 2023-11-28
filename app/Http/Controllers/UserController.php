@@ -50,4 +50,3 @@ class UserController extends Controller
         return [$attendancesByMonth, $months, $selectedMonth];
     }
 }
-

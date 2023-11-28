@@ -1,10 +1,4 @@
 <x-app-layout>
-    <x-slot name="header">
-        {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2> --}}
-    </x-slot>
-
     <div class="h-screen max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="text-center h-3/4">
             <x-message :message="session('message')" />
@@ -24,10 +18,8 @@
                         @csrf
                         <button type="submit"
                             class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
-        @if (Auth::check() && Auth::user()->work_started) text-zinc-300
-        @else
-            text-black @if (Auth::check() && !Auth::user()->work_started) hover:opacity-60 @endif
-        @endif">
+                            @if (isset($workStarted) && $workStarted && !$workEnded) text-zinc-300
+                            @else text-black hover:opacity-60 @endif">
                             勤務開始
                         </button>
                     </form>
@@ -38,7 +30,8 @@
                         @csrf
                         <button type="submit"
                             class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
-            @if (!Auth::check() || (Auth::check() && !Auth::user()->work_started)) text-zinc-300 @else text-black @endif">
+                            @if (isset($workStarted) && $workStarted && !$workEnded) text-black
+                            @else text-zinc-300 hover:opacity-60 @endif">
                             勤務終了
                         </button>
                     </form>
@@ -48,10 +41,10 @@
                     <form method="post" action="{{ route('start-break') }}">
                         @csrf
                         <button type="submit"
-                            class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
-            @if (Auth::check() && Auth::user()->work_started && !Auth::user()->break_started) text-black
-            @else text-zinc-300 @if (Auth::check() && !Auth::user()->work_started) hover:opacity-60 @endif
-            @endif">
+                            class="mx-2 mb-4 bg-white
+                            @if (!Auth::check() || (Auth::check() && !Auth::user()->break_started)) text-black
+                            @else text-zinc-300 hover:opacity-60 @endif
+                            text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto">
                             休憩開始
                         </button>
                     </form>
@@ -62,8 +55,9 @@
                         @csrf
                         <button type="submit"
                             class="mx-2 mb-4 bg-white
-                @if (!Auth::check() || (Auth::check() && !Auth::user()->break_started)) text-zinc-300 @else text-black hover:opacity-60 @endif
-                text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto">
+                            @if (!Auth::check() || (Auth::check() && !Auth::user()->break_started)) text-zinc-300
+                            @else text-black hover:opacity-60 @endif
+                            text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto">
                             休憩終了
                         </button>
                     </form>
