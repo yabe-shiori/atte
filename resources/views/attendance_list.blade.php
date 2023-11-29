@@ -6,7 +6,6 @@
             <span class="text-2xl">{{ $selectedDate }}</span>
             <a href="{{ route('attendance-list', ['date' => \Carbon\Carbon::parse($selectedDate)->addDay()->toDateString()]) }}"
                 class="inline-block w-10  border border-blue-400 text-blue-600 text-xl ml-4">&gt;</a>
-
             <table class="min-w-full text-lg py-4 mt-10 leading-loose">
                 <thead>
                     <tr>
@@ -33,7 +32,6 @@
                     @endforeach
                 </tbody>
             </table>
-
         </div>
         {{ $attendances->appends(['date' => $selectedDate])->links('vendor.pagination.tailwind2') }}
     </div>

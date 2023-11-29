@@ -5,20 +5,22 @@
         </h2>
         <div class="my-6 w-full">
 
-            <div class="mb-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4">
-                <form action="{{ route('user-attendance', $user->id) }}" method="get">
-                    @csrf
-                    <label for="selectedMonth" class="block text-xs font-normal text-gray-700">月を選択</label>
-                    <select id="selectedMonth" name="selectedMonth"
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-md" onchange="this.form.submit()">
-                        @foreach ($months as $month)
-                            <option value="{{ $month }}" {{ $month === $selectedMonth ? 'selected' : '' }}>
-                                {{ Carbon\Carbon::parse($month)->format('Y年m月') }}
-                            </option>
-                        @endforeach
-                    </select>
-                </form>
-            </div>
+            @if (count($months) > 0)
+                <div class="mb-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4">
+                    <form action="{{ route('user-attendance', $user->id) }}" method="get">
+                        @csrf
+                        <label for="selectedMonth" class="block text-xs font-normal text-gray-700">月を選択</label>
+                        <select id="selectedMonth" name="selectedMonth"
+                            class="w-full mt-1 p-2 border border-gray-300 rounded-md" onchange="this.form.submit()">
+                            @foreach ($months as $month)
+                                <option value="{{ $month }}" {{ $month === $selectedMonth ? 'selected' : '' }}>
+                                    {{ Carbon\Carbon::parse($month)->format('Y年m月') }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
+            @endif
         </div>
 
         @if ($attendancesByMonth->has($selectedMonth))
@@ -54,8 +56,7 @@
                 </tbody>
             </table>
         @else
-            <p>選択された月のデータはありません。</p>
+            <p class="font-bold text-xl mt-12">選択された月のデータはありません。</p>
         @endif
-    </div>
     </div>
 </x-app-layout>

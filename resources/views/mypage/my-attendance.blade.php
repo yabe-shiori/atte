@@ -54,7 +54,7 @@
                 </tbody>
             </table>
         @else
-            <p>選択された月のデータはありません。</p>
+            <p class="font-bold text-xl mt-12">選択された月のデータはありません。</p>
         @endif
     </div>
     </div>

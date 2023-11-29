@@ -15,7 +15,6 @@ class BreakTimeController extends Controller
 
     public function store(Request $request)
     {
-
         if ($this->isWorkEnded()) {
             return redirect()->route('dashboard')->with('error', '勤務が終了しています。');
         }
@@ -53,7 +52,6 @@ class BreakTimeController extends Controller
         $user->break_started = true;
         $user->save();
 
-        // 休憩レコードを作成
         $breakTime = new BreakTime();
         $breakTime->attendance_id = $todayAttendance->id;
         $breakTime->break_start_time = now();
@@ -62,7 +60,6 @@ class BreakTimeController extends Controller
         return redirect()->route('dashboard')->with('message', '休憩を開始しました。');
     }
 
-    // 休憩終了ボタンがクリックされたときの処理
     public function endBreak()
     {
         if ($this->isWorkEnded()) {
@@ -79,22 +76,18 @@ class BreakTimeController extends Controller
         $user->break_started = false;
         $user->save();
 
-        // 休憩終了時刻を更新
         $todayBreakTime->break_end_time = now();
         $todayBreakTime->save();
 
         return redirect()->route('dashboard')->with('message', '休憩を終了しました。');
     }
 
-    // 休憩が開始されているかどうかを判定
     private function isBreakStarted()
     {
         $user = Auth::user();
         return $user->break_started;
     }
 
-
-    // 勤務が終了しているかどうかを判定
     private function isWorkEnded()
     {
         $todayAttendance = $this->getTodayAttendance();

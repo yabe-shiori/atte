@@ -32,21 +32,17 @@ class UserController extends Controller
             return Carbon::parse($attendance->work_date)->format('Y-m');
         });
 
-        $months = $attendances->pluck('work_date')->unique()->map(function ($date) {
-            return Carbon::parse($date)->format('Y-m');
-        });
+        $allMonths = collect();
+        $startDate = Carbon::now()->subYear();
+        while ($startDate->lte(now())) {
+            $allMonths->push($startDate->format('Y-m'));
+            $startDate->addMonth();
+        }
 
-        // 年月を新しい順にソート
-        $months = $months->sort(function ($a, $b) {
-            return Carbon::parse($b)->getTimestamp() - Carbon::parse($a)->getTimestamp();
-        });
+        $allMonths = $allMonths->reverse();
 
-        // 最新の月を取得
-        $latestMonth = $months->first();
+        $selectedMonth = $request->input('selectedMonth', $allMonths->first());
 
-        // 選択された月があればその月のデータを、なければ最新の月のデータを表示
-        $selectedMonth = $request->input('selectedMonth', $latestMonth);
-
-        return [$attendancesByMonth, $months, $selectedMonth];
+        return [$attendancesByMonth, $allMonths, $selectedMonth];
     }
 }

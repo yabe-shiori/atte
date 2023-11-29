@@ -25,6 +25,7 @@ class AttendanceController extends Controller
             'user' => $user,
         ]);
     }
+    
     public function startWork()
     {
         $user = Auth::user();
