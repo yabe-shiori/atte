@@ -43,8 +43,7 @@ class AttendanceFactory extends Factory
     public function definition()
     {
         $user = User::inRandomOrder()->first();
-
-        // 最近一週間の範囲からランダムに日付を選択
+        
         $startDate = Carbon::now()->subDays(7);
         $endDate = Carbon::now();
 

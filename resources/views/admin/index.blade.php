@@ -33,6 +33,7 @@
                     </tr>
                 @endforeach
             </table>
+            {{ $users->links() }}
         </div>
     </div>
 </x-app-layout>
