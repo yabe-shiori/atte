@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\BreakTime;
 use App\Models\Attendance;
+use Carbon\Carbon;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BreakTime>
@@ -22,9 +23,12 @@ class BreakTimeFactory extends Factory
     {
         $attendance = Attendance::inRandomOrder()->first();
 
-        // 勤務開始から勤務終了までのランダムな時間を生成
         $startTime = $this->faker->dateTimeBetween($attendance->start_time, $attendance->end_time);
-        $endTime = $this->faker->dateTimeBetween($startTime, $attendance->end_time);
+
+        $maxBreakDuration = min(2 * 60, Carbon::parse($attendance->start_time)->diffInMinutes(Carbon::parse($attendance->end_time)));
+        $breakDuration = $this->faker->numberBetween(0, $maxBreakDuration);
+
+        $endTime = Carbon::instance($startTime)->addMinutes($breakDuration);
 
         return [
             'attendance_id' => $attendance->id,

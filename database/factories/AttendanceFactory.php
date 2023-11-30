@@ -14,14 +14,19 @@ class AttendanceFactory extends Factory
 
 
     //過去一年間のデータを作成
-
     // public function definition()
     // {
     //     $user = User::inRandomOrder()->first();
 
-    //     $startTime = $this->faker->dateTimeBetween('-1 year', 'now');
-    //     $endTime = $this->faker->dateTimeInInterval($startTime, '+1 day');
-    //     $endTime = $endTime > now() ? now() : $endTime;
+    //     // 過去一年間の範囲からランダムに日付を選択
+    //     $startDate = Carbon::now()->subYear();
+    //     $endDate = Carbon::now();
+
+    //     $startTime = $this->faker->dateTimeBetween($startDate, $endDate);
+    //     $endTime = $this->faker->dateTimeBetween(
+    //         $startTime,
+    //         Carbon::instance($startTime)->endOfDay()->subMinutes(1)->getTimestamp()
+    //     );
 
     //     $endOfDay = now()->endOfDay();
 
@@ -34,8 +39,7 @@ class AttendanceFactory extends Factory
     //     ];
     // }
 
-
-    //過去一週間のデータを作成
+    // //過去一週間のデータを作成
     public function definition()
     {
         $user = User::inRandomOrder()->first();
@@ -45,8 +49,10 @@ class AttendanceFactory extends Factory
         $endDate = Carbon::now();
 
         $startTime = $this->faker->dateTimeBetween($startDate, $endDate);
-        $endTime = $this->faker->dateTimeInInterval($startTime, '+1 day');
-        $endTime = $endTime > now() ? now() : $endTime;
+        $endTime = $this->faker->dateTimeBetween(
+            $startTime,
+            Carbon::instance($startTime)->endOfDay()->subMinutes(1)->getTimestamp()
+        );
 
         $endOfDay = now()->endOfDay();
 

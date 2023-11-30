@@ -2,7 +2,7 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
         <!-- 会員登録 -->
-        <h2 class="text-2xl text-center font-bold mb-10">{{ __('会員登録') }}</h2>
+        <h2 class="text-2xl text-center font-bold mt-8 mb-10">{{ __('会員登録') }}</h2>
 
         <!-- Name -->
         <div>

@@ -34,6 +34,9 @@
             {{ $slot }}
         </main>
     </div>
+    <footer class="bg-white h-12 text-center pt-3">
+        <p><small>Atte,inc.</small></p>
+    </footer>
 </body>
 
 </html>
