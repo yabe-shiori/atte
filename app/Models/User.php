@@ -11,8 +11,9 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Models\Attendance;
 use App\Models\Role;
 
-
-class User extends Authenticatable implements MustVerifyEmail
+//メール認証を有効にする
+// class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -32,7 +33,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'work_started',
         'break_started',
     ];
 
@@ -50,5 +50,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification()
     {
         $this->notify(new NewVerifyEmail());
+    }
+
+    public function hasStartedWorkOnDate($date)
+    {
+        return $this->attendance()->whereDate('start_time', $date)->exists();
+    }
+
+    public function hasEndedWorkOnDate($date)
+    {
+        return $this->attendance()->whereDate('end_time', $date)->exists();
     }
 }

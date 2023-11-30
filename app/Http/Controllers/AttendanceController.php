@@ -7,7 +7,6 @@ use App\Models\Attendance;
 use Illuminate\Support\Facades\Auth;
 use App\Services\AttendanceService;
 
-
 class AttendanceController extends Controller
 {
     protected $attendanceService;
@@ -25,7 +24,7 @@ class AttendanceController extends Controller
             'user' => $user,
         ]);
     }
-    
+
     public function startWork()
     {
         $user = Auth::user();
@@ -46,15 +45,11 @@ class AttendanceController extends Controller
 
         if ($crossedMidnight) {
             $attendance->crossed_midnight = true;
-
             $attendance->end_time = null;
         }
 
         $attendance->work_date = now()->toDateString();
         $attendance->save();
-
-        $userModel = \App\Models\User::find($user->id);
-        $userModel->update(['work_started' => true]);
 
         return redirect()->route('dashboard')->with('message', '出勤しました！');
     }
@@ -69,8 +64,8 @@ class AttendanceController extends Controller
             ->first();
 
         if ($todayAttendance) {
-
             $breaks = $todayAttendance->breakTimes;
+
             foreach ($breaks as $break) {
                 if (is_null($break->break_end_time)) {
                     return redirect()->route('dashboard')->with('error', '休憩が終了していません。');
@@ -79,12 +74,8 @@ class AttendanceController extends Controller
 
             $todayAttendance->end_time = now();
             $todayAttendance->save();
-            $message = $user->name . 'さん、お疲れさまでした！';
 
-            $userModel = \App\Models\User::find($user->id);
-            $userModel->update(['work_started' => false]);
-
-            return redirect()->route('dashboard')->with('message', $message);
+            return redirect()->route('dashboard')->with('message', $user->name . 'さん、お疲れさまでした！');
         }
 
         return redirect()->route('dashboard')->with('error', '勤務が開始されていません。');

@@ -12,9 +12,12 @@ use App\Http\Controllers\UserController;
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth'])->name('dashboard');
+// ->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+//メール認証を一時的に無効にしています
+// Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/', [AttendanceController::class, 'index'])
         ->name('dashboard');
 
@@ -61,7 +64,7 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
 
     Route::patch('roles/{user}/detach', [RoleController::class, 'detach'])
         ->name('role.detach');
-        
+
     Route::get('admin/user-attendance/{user}', [UserController::class, 'index'])
         ->name('user-attendance');
 });

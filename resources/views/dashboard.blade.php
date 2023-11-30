@@ -18,8 +18,11 @@
                         @csrf
                         <button type="submit"
                             class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
-                            @if (!Auth::check() || (Auth::check() && !Auth::user()->work_started)) text-black hover:opacity-60
-                            @else text-zinc-200 @endif">
+                            @if (!Auth::check() || (Auth::check() && !Auth::user()->hasStartedWorkOnDate(now()->toDateString())))
+                                text-black hover:opacity-60
+                            @else
+                                text-zinc-200
+                            @endif">
                             勤務開始
                         </button>
                     </form>
@@ -30,8 +33,11 @@
                         @csrf
                         <button type="submit"
                             class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
-                            @if (!Auth::check() || (Auth::check() && !Auth::user()->work_started)) text-zinc-200
-                            @else text-zinc-black hover:opacity-60 @endif">
+                            @if (!Auth::check() || (Auth::check() && !Auth::user()->hasStartedWorkOnDate(now()->toDateString())))
+                                text-zinc-300
+                            @else
+                                text-black hover:opacity-60
+                            @endif">
                             勤務終了
                         </button>
                     </form>
@@ -43,7 +49,7 @@
                         <button type="submit"
                             class="mx-2 mb-4 bg-white
                             @if (!Auth::check() || (Auth::check() && !Auth::user()->break_started)) text-black hover:opacity-60
-                            @else text-zinc-200  @endif
+                            @else text-zinc-200 @endif
                             text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto">
                             休憩開始
                         </button>
