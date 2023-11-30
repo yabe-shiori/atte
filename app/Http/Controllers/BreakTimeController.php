@@ -5,14 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\BreakTime;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Models\Attendance;
-use App\Models\User;
-
 
 class BreakTimeController extends Controller
 {
-
     public function store(Request $request)
     {
         if ($this->isWorkEnded()) {
@@ -20,6 +15,7 @@ class BreakTimeController extends Controller
         }
 
         $breakTime = new BreakTime([
+            'user_id' => Auth::user()->id,
             'attendance_id' => $request->input('attendance_id'),
             'break_start_time' => $request->input('break_start_time'),
             'break_end_time' => $request->input('break_end_time'),
@@ -40,21 +36,18 @@ class BreakTimeController extends Controller
             return redirect()->route('dashboard')->with('error', '既に休憩が開始されています。');
         }
 
-        $user = Auth::user();
-
         $todayAttendance = $this->getTodayAttendance();
 
         if ($todayAttendance === null) {
-
             return redirect()->route('dashboard')->with('error', '勤務が開始されていません。');
         }
 
-        $user->break_started = true;
-        $user->save();
+        $breakTime = new BreakTime([
+            'user_id' => Auth::user()->id,
+            'attendance_id' => $todayAttendance->id,
+            'break_start_time' => now(),
+        ]);
 
-        $breakTime = new BreakTime();
-        $breakTime->attendance_id = $todayAttendance->id;
-        $breakTime->break_start_time = now();
         $breakTime->save();
 
         return redirect()->route('dashboard')->with('message', '休憩を開始しました。');
@@ -72,10 +65,6 @@ class BreakTimeController extends Controller
             return redirect()->route('dashboard')->with('error', '休憩が開始されていません。');
         }
 
-        $user = Auth::user();
-        $user->break_started = false;
-        $user->save();
-
         $todayBreakTime->break_end_time = now();
         $todayBreakTime->save();
 
@@ -85,7 +74,9 @@ class BreakTimeController extends Controller
     private function isBreakStarted()
     {
         $user = Auth::user();
-        return $user->break_started;
+        $todayAttendance = $this->getTodayAttendance();
+
+        return $todayAttendance && $todayAttendance->breakTimes()->whereNull('break_end_time')->exists();
     }
 
     private function isWorkEnded()
@@ -109,10 +100,7 @@ class BreakTimeController extends Controller
         $todayAttendance = $this->getTodayAttendance();
 
         if ($todayAttendance) {
-
-            $latestBreakTime = $todayAttendance->breakTimes()->latest()->first();
-
-            return $latestBreakTime ?? null;
+            return $todayAttendance->breakTimes()->latest()->first();
         }
 
         return null;

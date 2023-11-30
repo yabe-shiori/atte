@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Attendance;
 use App\Models\Role;
+use App\Models\BreakTime;
 
 //メール認証を有効にする
 // class User extends Authenticatable implements MustVerifyEmail
@@ -20,6 +21,11 @@ class User extends Authenticatable
     public function attendance()
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    public function breakTimes()
+    {
+        return $this->hasMany(BreakTime::class);
     }
 
 
@@ -33,7 +39,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'break_started',
+        // 'break_started',
     ];
 
     protected $hidden = [
