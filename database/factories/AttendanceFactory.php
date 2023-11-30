@@ -43,7 +43,7 @@ class AttendanceFactory extends Factory
     public function definition()
     {
         $user = User::inRandomOrder()->first();
-        
+
         $startDate = Carbon::now()->subDays(7);
         $endDate = Carbon::now();
 

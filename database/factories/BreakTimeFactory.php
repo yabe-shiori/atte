@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\BreakTime;
 use App\Models\Attendance;
 use Carbon\Carbon;
+use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BreakTime>
@@ -21,6 +22,8 @@ class BreakTimeFactory extends Factory
      */
     public function definition(): array
     {
+        $user = User::inRandomOrder()->first();
+
         $attendance = Attendance::inRandomOrder()->first();
 
         $startTime = $this->faker->dateTimeBetween($attendance->start_time, $attendance->end_time);
