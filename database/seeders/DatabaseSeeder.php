@@ -15,16 +15,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(80)->create();
-        // Attendance::factory(50)->create();
-        BreakTime::factory(50)->create();
+        // User::factory(50)->create();
+        // Attendance::factory(80)->create();
+        // BreakTime::factory(80)->create();
 
-
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }

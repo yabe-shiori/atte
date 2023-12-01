@@ -24,16 +24,20 @@ class BreakTimeFactory extends Factory
     {
         $user = User::inRandomOrder()->first();
 
-        $attendance = Attendance::inRandomOrder()->first();
+        // user_idを指定して作成
+        // $user = User::find(91);
+
+        $attendance = Attendance::inRandomOrder()->first() ?? Attendance::factory()->create(['user_id' => $user->id]);
 
         $startTime = $this->faker->dateTimeBetween($attendance->start_time, $attendance->end_time);
 
-        $maxBreakDuration = min(2 * 60, Carbon::parse($attendance->start_time)->diffInMinutes(Carbon::parse($attendance->end_time)));
-        $breakDuration = $this->faker->numberBetween(0, $maxBreakDuration);
+        $maxBreakDuration = min(2 * 60, Carbon::parse($attendance->end_time)->diffInMinutes(Carbon::parse($startTime)));
+        $breakDuration = $this->faker->numberBetween(60, $maxBreakDuration);
 
         $endTime = Carbon::instance($startTime)->addMinutes($breakDuration);
 
         return [
+            'user_id' => $user->id,
             'attendance_id' => $attendance->id,
             'break_start_time' => $startTime,
             'break_end_time' => $endTime,
