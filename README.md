@@ -60,13 +60,12 @@
 
 | Category          | Technology Stack                                     |
 | ----------------- | --------------------------------------------------   |
-| Frontend          | npm, Tailwind CSS 　　　　　　　　　　　　　　        |
+| Frontend          | npm, Tailwind CSS                                    |
 | Backend           | Laravel, PHP                                         |
-| Infrastructure    | Amazon Web Services　　　　                          |
-| Database          | MySQL                             　　　             |
+| Infrastructure    | Amazon Web Services                                  |
+| Database          | MySQL                                                |
 | Environment setup | Docker, Laravel Sail                                 |
-| CI/CD             | GitHub                                      　　　　 |
-| etc.              | Git, GitHub 　　　　　　　　　　　　　　　　　　　　　|
+| etc.              | Git, GitHub                                          |
 
 <br />
 
