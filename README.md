@@ -36,21 +36,17 @@
 | 会員登録画面 |　ログイン画面 |
 | ---- | ---- |
 | ![会員登録画面](https://github.com/yabe-shiori/atte/assets/142664073/74610f84-65d9-45e1-8556-52ec6931fcab) | ![ログイン画面](https://github.com/yabe-shiori/atte/assets/142664073/a26fb8b9-4097-4a44-bbfd-09eaf796fa49) |
-| 従業員情報を登録します | メールアドレスとパスワードを入力し、ログインします。 |
+| 従業員は会員登録を行います。 | メールアドレスとパスワードを入力し、ログインします。 |
 
 | メール認証 | 打刻画面 |
 | ---- | ---- |
 | ![メール認証](https://github.com/yabe-shiori/atte/assets/142664073/68dad4e6-5597-4b5a-be21-fd2b53437f28)　| ![打刻画面](https://github.com/yabe-shiori/atte/assets/142664073/14f71903-b82a-494e-b42f-d2dbb34d2a94) |
-| メール認証機能を実装しました。 | 従業員はログイン後に自分の勤怠情報をワンクリックで登録できます。 |
+| 安全に使用できるようにメール認証機能を実装しました。 | 従業員はログイン後に自分の勤怠情報をワンクリックで登録できます。 |
 
 
 | 従業員ごとの勤怠情報画面 |　アカウント編集画面 |
 | ---- | ---- |
-| ![自分の勤怠情報確認画面]() | ![アカウント情報編集ページ](https://github.com/yabe-shiori/atte/assets/142664073/18185326-6125-4806-a7a4-fe58a5225214)
-　|
-
- 
-|
+| ![自分の勤怠情報確認画面](https://github.com/yabe-shiori/atte/assets/142664073/38740632-4d68-4a48-8963-45440f9103b3) | ![アカウント情報編集ページ](https://github.com/yabe-shiori/atte/assets/142664073/18185326-6125-4806-a7a4-fe58a5225214) | 
 | 従業員は自分の勤怠情報を月別で確認できます。 | 従業員は自分のメールアドレスやパスワード情報を編集することができます。 |
 
 | 従業員一覧画面 |　役割付与 |
@@ -70,7 +66,6 @@
 | Database          | MySQL                             　　　             |
 | Environment setup | Docker, Laravel Sail                                 |
 | CI/CD             | GitHub                                      　　　　 |
-| Design            | Figma　　　　　                                      |
 | etc.              | Git, GitHub 　　　　　　　　　　　　　　　　　　　　　|
 
 <br />
