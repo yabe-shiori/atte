@@ -4,6 +4,7 @@
             {{ $user->name }}さんの勤怠情報
         </h2>
         <div class="my-6 w-full">
+            <x-message :message="session('message')" />
 
             @if (count($months) > 0)
                 <div class="mb-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4">
@@ -33,6 +34,7 @@
                         <th class="p-3 text-center">勤務終了</th>
                         <th class="p-3 text-center">休憩時間</th>
                         <th class="p-3 text-center">勤務時間</th>
+                        <th class="p-3 text-center">編集</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,6 +52,12 @@
                             </td>
                             <td class="border-gray-light border p-3">
                                 {{ $attendance->calculateWorkTime() }}
+                            </td>
+                            <td class="border-gray-light border p-3">
+                                <a
+                                    href="{{ route('edit-attendance', ['user' => $user->id, 'attendance' => $attendance->id]) }}">
+                                    <x-primary-button class="bg-zinc-400">編集</x-primary-button>
+                                </a>
                             </td>
                         </tr>
                     @endforeach

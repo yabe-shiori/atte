@@ -41,7 +41,9 @@ class UserController extends Controller
 
         $allMonths = $allMonths->reverse();
 
-        $selectedMonth = $request->input('selectedMonth', $allMonths->first());
+        $latestMonthWithData = $attendancesByMonth->keys()->sortDesc()->first();
+
+        $selectedMonth = $request->input('selectedMonth', $latestMonthWithData ?? $allMonths->first());
 
         return [$attendancesByMonth, $allMonths, $selectedMonth];
     }

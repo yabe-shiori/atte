@@ -6,6 +6,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\BreakTimeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminUserController;
 
 
 
@@ -68,5 +69,8 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
     Route::get('admin/user-attendance/{user}', [UserController::class, 'index'])
         ->name('user-attendance');
 });
+
+Route::get('/edit-attendance/{user}/{attendance}', [AdminUserController::class, 'editAttendance'])->name('edit-attendance');
+Route::put('/update-attendance/{user}/{attendance}', [AdminUserController::class, 'updateAttendance'])->name('update-attendance');
 
 require __DIR__ . '/auth.php';
