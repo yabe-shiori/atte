@@ -53,10 +53,10 @@
                             <td class="border-gray-light border p-3">
                                 {{ $attendance->calculateWorkTime() }}
                             </td>
-                            <td class="border-gray-light border p-3">
+                            <td class="border-gray-light border p-3 text-center">
                                 <a
                                     href="{{ route('edit-attendance', ['user' => $user->id, 'attendance' => $attendance->id]) }}">
-                                    <x-primary-button class="bg-zinc-400">編集</x-primary-button>
+                                        <i class="fas fa-pencil-alt fa-lg" style="color: #020409;"></i>
                                 </a>
                             </td>
                         </tr>

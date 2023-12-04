@@ -18,13 +18,13 @@ class AdminUserController extends Controller
     {
         // 入力検証やデータの更新などを行う
         $request->validate([
-            'start_time' => 'required|date_format:H:i:s',
-            'end_time' => 'required|date_format:H:i:s',
+            'start_time' => 'required|date_format:Y-m-d H:i:s',
+            'end_time' => 'required|date_format:Y-m-d H:i:s',
         ]);
 
         // 勤怠情報を更新
-        $attendance->start_time = now()->setTimeFromTimeString($request->input('start_time'));
-        $attendance->end_time = now()->setTimeFromTimeString($request->input('end_time'));
+        $attendance->start_time = Carbon::parse($request->input('start_time'));
+        $attendance->end_time = Carbon::parse($request->input('end_time'));
         $attendance->save();
 
         return redirect()->route('user-attendance', ['user' => $user->id])->with('message', '勤怠情報が更新されました');

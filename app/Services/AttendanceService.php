@@ -53,9 +53,21 @@ class AttendanceService
         $end = Carbon::parse($attendance->end_time);
         $breakTimes = $attendance->breakTimes;
 
-        $breakDuration = $breakTimes->isNotEmpty() ? $this->calculateBreakDuration($attendance) : '00:00:00';
+        // 日付が異なる場合、日付ごとに勤務時間と休憩時間を計算
+        if (!$start->isSameDay($end)) {
+            $workDurationFirstDay = $start->copy()->endOfDay()->diffInSeconds($start) - $this->parseDuration($this->calculateBreakDuration($attendance));
+            $workDurationSecondDay = $end->diffInSeconds($end->copy()->startOfDay()) - $this->parseDuration($this->calculateBreakDuration($attendance));
 
-        $workDurationInSeconds = max(0, $end->diffInSeconds($start) - $this->parseDuration($breakDuration));
+            // 合算
+            $workDurationInSeconds = $workDurationFirstDay + $workDurationSecondDay;
+        } else {
+            // 同じ日に収まっている場合は通常通り休憩時間を計算
+            $breakDuration = $breakTimes->isNotEmpty() ? $this->calculateBreakDuration($attendance) : '00:00:00';
+
+            // 勤務時間を計算
+            $workDurationInSeconds = max(0, $end->diffInSeconds($start) - $this->parseDuration($breakDuration));
+        }
+
         return $this->formatDuration($workDurationInSeconds);
     }
 
@@ -74,6 +86,7 @@ class AttendanceService
         return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
 
+    // 12/4 修正
     public function getAttendancesByDate($selectedDate)
     {
         return Attendance::with('user', 'breakTimes')
@@ -97,6 +110,7 @@ class AttendanceService
                 $attendance->break_start_time = $attendance->min_break_start_time;
                 $attendance->break_end_time = $attendance->max_break_end_time;
                 $attendance->breakDuration = $this->calculateBreakDuration($attendance);
+                $attendance->workDuration = $this->calculateWorkTime($attendance);
                 unset($attendance->min_break_start_time, $attendance->max_break_end_time);
 
                 return $attendance;

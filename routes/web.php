@@ -68,9 +68,14 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
 
     Route::get('admin/user-attendance/{user}', [UserController::class, 'index'])
         ->name('user-attendance');
+
+    Route::get('/edit-attendance/{user}/{attendance}', [AdminUserController::class, 'editAttendance'])
+        ->name('edit-attendance');
+
+    Route::put('/update-attendance/{user}/{attendance}', [AdminUserController::class, 'updateAttendance'])
+        ->name('update-attendance');
 });
 
-Route::get('/edit-attendance/{user}/{attendance}', [AdminUserController::class, 'editAttendance'])->name('edit-attendance');
-Route::put('/update-attendance/{user}/{attendance}', [AdminUserController::class, 'updateAttendance'])->name('update-attendance');
+
 
 require __DIR__ . '/auth.php';

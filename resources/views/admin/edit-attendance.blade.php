@@ -12,17 +12,17 @@
                     <div class="mb-4">
                         <label for="start_time" class="block text-sm font-medium text-gray-700">勤務開始時間</label>
                         <input type="text" id="start_time" name="start_time"
-                            value="{{ old('start_time', \Carbon\Carbon::parse($attendance->start_time)->format('H:i:s')) }}"
+                            value="{{ old('start_time', Carbon\Carbon::parse($attendance->start_time)->format('Y-m-d H:i:s')) }}"
                             class="form-input w-full mt-1 py-2 px-3 border border-gray-300 rounded-md"
-                            placeholder="HH:MM:SS">
+                            placeholder="YYYY-MM-DD HH:MM:SS">
                     </div>
 
                     <div class="mb-4">
                         <label for="end_time" class="block text-sm font-medium text-gray-700">勤務終了時間</label>
                         <input type="text" id="end_time" name="end_time"
-                            value="{{ old('end_time', \Carbon\Carbon::parse($attendance->end_time)->format('H:i:s')) }}"
+                            value="{{ old('end_time', Carbon\Carbon::parse($attendance->end_time)->format('Y-m-d H:i:s')) }}"
                             class="form-input w-full mt-1 py-2 px-3 border border-gray-300 rounded-md"
-                            placeholder="HH:MM:SS">
+                            placeholder="YYYY-MM-DD HH:MM:SS">
                     </div>
 
                     <div class="mb-4">
