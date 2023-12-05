@@ -16,13 +16,11 @@ class AdminUserController extends Controller
 
     public function updateAttendance(Request $request, User $user, Attendance $attendance)
     {
-        // 入力検証やデータの更新などを行う
         $request->validate([
             'start_time' => 'required|date_format:Y-m-d H:i:s',
             'end_time' => 'required|date_format:Y-m-d H:i:s',
         ]);
 
-        // 勤怠情報を更新
         $attendance->start_time = Carbon::parse($request->input('start_time'));
         $attendance->end_time = Carbon::parse($request->input('end_time'));
         $attendance->save();

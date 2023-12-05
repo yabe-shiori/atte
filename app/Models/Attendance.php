@@ -21,6 +21,11 @@ class Attendance extends Model
         'crossed_midnight',
     ];
 
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -30,7 +35,7 @@ class Attendance extends Model
     {
         return $this->hasMany(BreakTime::class);
     }
-    
+
     public function calculateWorkDuration()
     {
         $start = Carbon::parse($this->start_time);

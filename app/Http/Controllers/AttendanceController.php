@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Attendance;
 use Illuminate\Support\Facades\Auth;
 use App\Services\AttendanceService;
+use App\Jobs\SetEndWorkTimeJob;
+
 
 class AttendanceController extends Controller
 {
@@ -29,43 +31,35 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
-        // 本日の出勤がまだなければ
         $todayAttendance = $user->attendance()->whereDate('work_date', now()->toDateString())->first();
         if (!$todayAttendance) {
             $attendance = new Attendance();
             $attendance->user_id = $user->id;
             $attendance->start_time = now();
 
-            // 初回勤務開始時に日付をまたいでいるか確認し、crossed_midnightカラムを設定
             $attendance->crossed_midnight = $this->hasCrossedMidnight($user);
 
-            // 10時間経過後に勤務終了時刻を設定
-            $tenHoursLater = now()->addHours(10);
             if ($attendance->crossed_midnight) {
-                // 前日の勤務終了ボタンが押されていない場合
                 if (!$this->hasPreviousDayEndButtonPressed($user)) {
-                    // 自動で前日の勤務終了時刻を設定
-                    $attendance->end_time = $tenHoursLater;
-                    $attendance->work_date = now()->toDateString();
-                    $attendance->save();
+                    // ジョブをディスパッチして非同期で勤務終了時刻を設定
+                    SetEndWorkTimeJob::dispatch($user, $attendance)
+                        ->delay(now()->addHours(10))
+                        ->onQueue('end_work'); // キュー名を指定
 
-                    // メッセージを表示
-                    return redirect()->route('dashboard')->with('message', '前日の勤務終了ボタンが押されていません。前日の勤務終了時刻を設定しました。');
+                    return redirect()->route('dashboard')->with('message', '前日の勤務終了ボタンが押されていません。正しい勤務終了時刻を管理者にお伝えください。');
                 }
             }
 
-            // 勤務開始を保存
             $attendance->work_date = now()->toDateString();
             $attendance->save();
 
             return redirect()->route('dashboard')->with('message', '出勤しました！');
         }
 
-        // 今日の出勤が既に記録されている場合
         return redirect()->route('dashboard')->with('error', '本日の勤務は既に開始しています。');
     }
 
-    // 修正: 前日の勤務終了ボタンが押されているか確認
+
     private function hasPreviousDayEndButtonPressed($user)
     {
         return $user->attendance()
@@ -113,7 +107,6 @@ class AttendanceController extends Controller
         return view('attendance_list', compact('attendances', 'selectedDate', 'totalAttendances'));
     }
 
-    //修正
     private function hasCrossedMidnight($user)
     {
         return $user->attendance()
