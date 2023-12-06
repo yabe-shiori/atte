@@ -6,8 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Attendance;
 use Illuminate\Support\Facades\Auth;
 use App\Services\AttendanceService;
-use App\Jobs\SetEndWorkTimeJob;
-
+use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
@@ -59,6 +58,7 @@ class AttendanceController extends Controller
 
                 // 勤務終了ボタンが押されていないか確認
                 $this->checkAutomaticEndTime($attendance);
+                Log::info('Job dispatched successfully.');
 
                 return redirect()->route('dashboard')->with('message', '出勤しました！');
             } else {
@@ -75,20 +75,19 @@ class AttendanceController extends Controller
         return redirect()->route('dashboard')->with('error', '本日の勤務は既に開始しています。');
     }
 
-    private function checkAutomaticEndTime($attendance)
+    public function checkAutomaticEndTime($attendance)
     {
         $user = Auth::user();
 
         // 勤務終了ボタンが押されていない場合かつ開始から10時間以上経過している場合
-        if (is_null($attendance->end_time) && now()->diffInHours($attendance->start_time) >= 10) {
-
+        if (is_null($attendance->end_time) && now()->diffInHours($attendance->start_time) >= 1) {
             $attendance->update([
-                'end_time' => $attendance->start_time->addHours(10),
+                'end_time' => $attendance->start_time->addHours(1),
             ]);
 
-            SetEndWorkTimeJob::dispatch($user, $attendance)
-                ->delay(now()->addHours(1))
-                ->onQueue('end_work');
+            Log::info('ジョブディスパッチ前');
+            // SetEndWorkTimeJob::dispatch($user, $attendance)->delay(now()->addHours(10))->onQueue('end_work');
+            Log::info('ジョブディスパッチ後');
         }
     }
 
