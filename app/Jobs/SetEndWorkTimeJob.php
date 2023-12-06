@@ -10,6 +10,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\EndWorkTimeSetNotification;
+use Illuminate\Support\Facades\Log;
+
 
 class SetEndWorkTimeJob implements ShouldQueue
 {
@@ -29,11 +31,20 @@ class SetEndWorkTimeJob implements ShouldQueue
      */
     public function handle(): void
     {
+        // ログを追加
+        Log::info('SetEndWorkTimeJob is processing.');
+        Log::info('User: ' . $this->user->name);
+        Log::info('Attendance ID: ' . $this->attendance->id);
+
+
         // ユーザーがボタンを押していない場合にのみ勤務終了時刻を設定
         if (is_null($this->attendance->end_time)) {
             $this->attendance->update([
-                'end_time' => $this->attendance->start_time->addHours(10),
+                'end_time' => $this->attendance->start_time->addHours(1),
             ]);
+
+            //ログの追加
+            Log::info('End time has been set automatically.');
 
             // 非同期通知を送信
             //メール通知機能を一時的にコメントアウトしています。

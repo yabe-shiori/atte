@@ -32,6 +32,7 @@ class AttendanceController extends Controller
         $user = Auth::user();
 
         $todayAttendance = $user->attendance()->whereDate('work_date', now()->toDateString())->first();
+
         if (!$todayAttendance) {
             $attendance = new Attendance();
             $attendance->user_id = $user->id;
@@ -39,26 +40,57 @@ class AttendanceController extends Controller
 
             $attendance->crossed_midnight = $this->hasCrossedMidnight($user);
 
+            // 出勤時刻が深夜をまたいでいる場合、分割して保存
             if ($attendance->crossed_midnight) {
-                if (!$this->hasPreviousDayEndButtonPressed($user)) {
-                    // ジョブをディスパッチして非同期で勤務終了時刻を設定
-                    SetEndWorkTimeJob::dispatch($user, $attendance)
-                        ->delay(now()->addHours(10))
-                        ->onQueue('end_work'); // キュー名を指定
+                // 勤怠レコードの日付を変更し、出勤時刻から深夜までを保存
+                $attendance->work_date = now()->toDateString();
+                $attendance->end_time = now()->setTime(24, 0, 0);
+                $attendance->save();
 
-                    return redirect()->route('dashboard')->with('message', '前日の勤務終了ボタンが押されていません。正しい勤務終了時刻を管理者にお伝えください。');
-                }
+                // 新しいレコードを作成して、深夜から退勤時刻までを保存
+                $nextDayAttendance = new Attendance();
+                $nextDayAttendance->user_id = $user->id;
+                $nextDayAttendance->start_time = now()->setTime(0, 0, 0);
+
+                // ここでユーザーが勤務終了ボタンを押した時刻をセット
+                $nextDayAttendance->end_time = now();
+                $nextDayAttendance->work_date = now()->addDay()->toDateString();
+                $nextDayAttendance->save();
+
+                // 勤務終了ボタンが押されていないか確認
+                $this->checkAutomaticEndTime($attendance);
+
+                return redirect()->route('dashboard')->with('message', '出勤しました！');
+            } else {
+
+                $attendance->work_date = now()->toDateString();
+                $attendance->save();
+
+                $this->checkAutomaticEndTime($attendance);
+
+                return redirect()->route('dashboard')->with('message', '出勤しました！');
             }
-
-            $attendance->work_date = now()->toDateString();
-            $attendance->save();
-
-            return redirect()->route('dashboard')->with('message', '出勤しました！');
         }
 
         return redirect()->route('dashboard')->with('error', '本日の勤務は既に開始しています。');
     }
 
+    private function checkAutomaticEndTime($attendance)
+    {
+        $user = Auth::user();
+
+        // 勤務終了ボタンが押されていない場合かつ開始から10時間以上経過している場合
+        if (is_null($attendance->end_time) && now()->diffInHours($attendance->start_time) >= 10) {
+
+            $attendance->update([
+                'end_time' => $attendance->start_time->addHours(10),
+            ]);
+
+            SetEndWorkTimeJob::dispatch($user, $attendance)
+                ->delay(now()->addHours(1))
+                ->onQueue('end_work');
+        }
+    }
 
     private function hasPreviousDayEndButtonPressed($user)
     {
