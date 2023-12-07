@@ -31,8 +31,8 @@ class BreakTimeFactory extends Factory
 
         $startTime = $this->faker->dateTimeBetween($attendance->start_time, $attendance->end_time);
 
-        $maxBreakDuration = min(2 * 60, Carbon::parse($attendance->end_time)->diffInMinutes(Carbon::parse($startTime)));
-        $breakDuration = $this->faker->numberBetween(60, $maxBreakDuration);
+        // 休憩のデフォルト時間を1時間から2時間までのランダムな値に設定
+        $breakDuration = $this->faker->numberBetween(60, 120);
 
         $endTime = Carbon::instance($startTime)->addMinutes($breakDuration);
 

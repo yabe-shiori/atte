@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use Illuminate\Support\Facades\Auth;
 use App\Services\AttendanceService;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
@@ -30,6 +31,7 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
+        // 今日の勤務情報を取得
         $todayAttendance = $user->attendance()->whereDate('work_date', now()->toDateString())->first();
 
         if (!$todayAttendance) {
@@ -41,24 +43,17 @@ class AttendanceController extends Controller
 
             // 出勤時刻が深夜をまたいでいる場合、分割して保存
             if ($attendance->crossed_midnight) {
-                // 勤怠レコードの日付を変更し、出勤時刻から深夜までを保存
+
                 $attendance->work_date = now()->toDateString();
                 $attendance->end_time = now()->setTime(24, 0, 0);
                 $attendance->save();
 
-                // 新しいレコードを作成して、深夜から退勤時刻までを保存
                 $nextDayAttendance = new Attendance();
                 $nextDayAttendance->user_id = $user->id;
                 $nextDayAttendance->start_time = now()->setTime(0, 0, 0);
-
-                // ここでユーザーが勤務終了ボタンを押した時刻をセット
                 $nextDayAttendance->end_time = now();
                 $nextDayAttendance->work_date = now()->addDay()->toDateString();
                 $nextDayAttendance->save();
-
-                // 勤務終了ボタンが押されていないか確認
-                $this->checkAutomaticEndTime($attendance);
-                Log::info('Job dispatched successfully.');
 
                 return redirect()->route('dashboard')->with('message', '出勤しました！');
             } else {
@@ -66,36 +61,10 @@ class AttendanceController extends Controller
                 $attendance->work_date = now()->toDateString();
                 $attendance->save();
 
-                $this->checkAutomaticEndTime($attendance);
-
                 return redirect()->route('dashboard')->with('message', '出勤しました！');
             }
         }
-
         return redirect()->route('dashboard')->with('error', '本日の勤務は既に開始しています。');
-    }
-
-    public function checkAutomaticEndTime($attendance)
-    {
-        $user = Auth::user();
-
-        // 勤務終了ボタンが押されていない場合かつ開始から10時間以上経過している場合
-        if (is_null($attendance->end_time) && now()->diffInHours($attendance->start_time) >= 1) {
-            $attendance->update([
-                'end_time' => $attendance->start_time->addHours(1),
-            ]);
-
-            Log::info('ジョブディスパッチ前');
-            // SetEndWorkTimeJob::dispatch($user, $attendance)->delay(now()->addHours(10))->onQueue('end_work');
-            Log::info('ジョブディスパッチ後');
-        }
-    }
-
-    private function hasPreviousDayEndButtonPressed($user)
-    {
-        return $user->attendance()
-            ->whereDate('end_time', now()->subDay()->toDateString())
-            ->exists();
     }
 
     public function endWork()
