@@ -25,7 +25,9 @@
         </div>
 
         @if ($attendancesByMonth->has($selectedMonth))
-            <h3 class="text-xl font-semibold mt-4 mb-2">{{ Carbon\Carbon::parse($selectedMonth)->format('Y年m月') }}</h3>
+            <h3 class="text-xl font-semibold mt-4 mb-2">
+                {{ Carbon\Carbon::parse($selectedMonth)->format('Y年m月') }}
+            </h3>
             <table class="text-left w-full border-collapse mt-2">
                 <thead>
                     <tr class="bg-blue-500 text-white">
@@ -40,7 +42,9 @@
                 <tbody>
                     @foreach ($attendancesByMonth[$selectedMonth] as $attendance)
                         <tr>
-                            <td class="border-gray-light border p-3">{{ $attendance->work_date }}</td>
+                            <td class="border-gray-light border p-3">
+                                {{ \Carbon\Carbon::parse($attendance->work_date)->format('Y-m-d') }}
+                            </td>
                             <td class="border-gray-light border p-3">
                                 {{ \Carbon\Carbon::parse($attendance->start_time)->format('H:i:s') }}
                             </td>

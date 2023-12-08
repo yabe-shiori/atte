@@ -8,6 +8,13 @@
                     method="post" onsubmit="return showConfirmation()">
                     @csrf
                     @method('PUT')
+                    <div class="mb-4">
+                        <label for="work_date" class="block text-sm font-medium text-gray-700">勤務日</label>
+                        <input type="text" id="work_date" name="work_date"
+                            value="{{ old('work_date', isset($attendance->work_date) ? \Carbon\Carbon::parse($attendance->work_date)->format('Y-m-d') : '') }}"
+                            class="form-input w-full mt-1 py-2 px-3 border border-gray-300 rounded-md"
+                            placeholder="YYYY-MM-DD">
+                    </div>
 
                     <div class="mb-4">
                         <label for="start_time" class="block text-sm font-medium text-gray-700">勤務開始時間</label>

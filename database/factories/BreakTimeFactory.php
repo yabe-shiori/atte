@@ -27,7 +27,9 @@ class BreakTimeFactory extends Factory
         // user_idを指定して作成
         // $user = User::find(91);
 
-        $attendance = Attendance::inRandomOrder()->first() ?? Attendance::factory()->create(['user_id' => $user->id]);
+        $attendance = Attendance::inRandomOrder()
+            ->where('user_id', $user->id)
+            ->first() ?? Attendance::factory()->create(['user_id' => $user->id]);
 
         $startTime = $this->faker->dateTimeBetween($attendance->start_time, $attendance->end_time);
 

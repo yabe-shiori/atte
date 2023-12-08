@@ -29,36 +29,37 @@ class AttendanceController extends Controller
 
     public function startWork()
     {
+        $now = now();
         $user = Auth::user();
-
-        // 今日の勤務情報を取得
-        $todayAttendance = $user->attendance()->whereDate('work_date', now()->toDateString())->first();
+        $todayAttendance = $user->attendance()->whereDate('work_date', $now->toDateString())->first();
 
         if (!$todayAttendance) {
+
             $attendance = new Attendance();
             $attendance->user_id = $user->id;
-            $attendance->start_time = now();
+            $attendance->start_time = $now;
 
-            $attendance->crossed_midnight = $this->hasCrossedMidnight($user);
+            $attendance->crossed_midnight = $this->hasCrossedMidnight($user, $now);
 
             // 出勤時刻が深夜をまたいでいる場合、分割して保存
             if ($attendance->crossed_midnight) {
 
-                $attendance->work_date = now()->toDateString();
-                $attendance->end_time = now()->setTime(24, 0, 0);
+                $attendance->work_date = $now->toDateString();
+                $attendance->end_time = $now->copy()->endOfDay();
                 $attendance->save();
+
+                $startOfNextDay = $now->copy()->addDay()->startOfDay();
 
                 $nextDayAttendance = new Attendance();
                 $nextDayAttendance->user_id = $user->id;
-                $nextDayAttendance->start_time = now()->setTime(0, 0, 0);
-                $nextDayAttendance->end_time = now();
-                $nextDayAttendance->work_date = now()->addDay()->toDateString();
+                $nextDayAttendance->start_time = $startOfNextDay;
+                $nextDayAttendance->work_date = $startOfNextDay->toDateString();
                 $nextDayAttendance->save();
 
                 return redirect()->route('dashboard')->with('message', '出勤しました！');
             } else {
 
-                $attendance->work_date = now()->toDateString();
+                $attendance->work_date = $now->toDateString();
                 $attendance->save();
 
                 return redirect()->route('dashboard')->with('message', '出勤しました！');
@@ -69,10 +70,11 @@ class AttendanceController extends Controller
 
     public function endWork()
     {
+        $now = now();
         $user = Auth::user();
 
         $todayAttendance = $user->attendance()
-            ->whereDate('work_date', now()->toDateString())
+            ->whereDate('work_date', $now->toDateString())
             ->whereNull('end_time')
             ->first();
 
@@ -85,7 +87,7 @@ class AttendanceController extends Controller
                 }
             }
 
-            $todayAttendance->end_time = now();
+            $todayAttendance->end_time = $now;
             $todayAttendance->save();
 
             return redirect()->route('dashboard')->with('message', $user->name . 'さん、お疲れさまでした！');
@@ -94,9 +96,11 @@ class AttendanceController extends Controller
         return redirect()->route('dashboard')->with('error', '勤務が開始されていません。');
     }
 
+
     public function attendanceList(Request $request)
     {
-        $selectedDate = $request->input('date', now()->toDateString());
+        $now = now();
+        $selectedDate = $request->input('date', $now->toDateString());
 
         $totalAttendances = Attendance::whereDate('work_date', $selectedDate)->count();
 
@@ -107,13 +111,19 @@ class AttendanceController extends Controller
         return view('attendance_list', compact('attendances', 'selectedDate', 'totalAttendances'));
     }
 
-    private function hasCrossedMidnight($user)
+
+    private function hasCrossedMidnight($user, Carbon $now)
     {
+        $today = $now->toDateString();
+        $startOfToday = $now->copy()->startOfDay();
+        $startOfTomorrow = $now->copy()->addDay()->startOfDay();
+
         return $user->attendance()
-            ->where(function ($query) {
-                $query->where('start_time', '<', '06:00:00')
-                    ->orWhere(function ($query) {
-                        $query->where('end_time', '>=', '22:00:00')
+            ->whereDate('work_date', $today)
+            ->where(function ($query) use ($startOfToday, $startOfTomorrow) {
+                $query->where('start_time', '<', $startOfToday)
+                    ->orWhere(function ($query) use ($startOfTomorrow) {
+                        $query->where('end_time', '>=', $startOfTomorrow)
                             ->orWhereNull('end_time');
                     });
             })

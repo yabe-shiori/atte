@@ -22,6 +22,7 @@ class Attendance extends Model
     ];
 
     protected $casts = [
+        'work_date' => 'date',
         'start_time' => 'datetime',
         'end_time' => 'datetime',
     ];

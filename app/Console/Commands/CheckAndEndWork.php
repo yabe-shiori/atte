@@ -10,26 +10,44 @@ use App\Notifications\EndWorkTimeSetNotification;
 class CheckAndEndWork extends Command
 {
     protected $signature = 'check:endwork';
-    protected $description = 'Check and end work for users who have been working for more than 10 hours';
+    protected $description = 'Check and end work for users who have been working for more than 10 hours without a recorded end time.';
 
     public function handle()
     {
         $this->info('Checking and ending work...');
 
-        $usersToCheck = Attendance::whereNull('end_time')
-            ->where('start_time', '<', now()->subHours(10)->toDateTimeString())
+        $attendances = Attendance::with('user')
+            ->whereNull('end_time')
+            ->where('start_time', '<', now()->subHours(10))
             ->get();
 
-        foreach ($usersToCheck as $attendance) {
-            $attendance->end_time = $attendance->start_time->addHours(10);
-            $attendance->save();
+        foreach ($attendances as $attendance) {
+            $calculatedEndTime = $attendance->start_time->copy()->addHours(10);
+
+            if ($attendance->crossed_midnight) {
+                $nextDayAttendance = Attendance::where('user_id', $attendance->user_id)
+                    ->whereDate('work_date', '=', $attendance->start_time->addDay()->toDateString())
+                    ->first();
+
+                if (!$nextDayAttendance) {
+                    $nextDayAttendance = new Attendance();
+                    $nextDayAttendance->user_id = $attendance->user_id;
+                    $nextDayAttendance->work_date = $attendance->start_time->addDay()->toDateString();
+                    $nextDayAttendance->start_time = $attendance->start_time->copy()->addDay()->startOfDay();
+                    $nextDayAttendance->end_time = $calculatedEndTime;
+                    $nextDayAttendance->save();
+                }
+            } else {
+                $attendance->end_time = $calculatedEndTime;
+                $attendance->save();
+            }
 
             // ユーザーに通知
             // $attendance->user->notify(new EndWorkTimeSetNotification($attendance));
 
-            $this->info('Work ended for user ' . $attendance->user->name);
+            $this->info('Work ended automatically for user: ' . $attendance->user->name);
         }
 
-        $this->info('Check and end work completed.');
+        $this->info('Check and end work process completed.');
     }
 }
