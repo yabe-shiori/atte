@@ -43,7 +43,7 @@ class CheckAndEndWork extends Command
             }
 
             // ユーザーに通知
-            // $attendance->user->notify(new EndWorkTimeSetNotification($attendance));
+            $attendance->user->notify(new EndWorkTimeSetNotification($attendance));
 
             $this->info('Work ended automatically for user: ' . $attendance->user->name);
         }

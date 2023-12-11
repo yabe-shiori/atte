@@ -12,9 +12,8 @@ use App\Models\Attendance;
 use App\Models\Role;
 use App\Models\BreakTime;
 
-//メール認証を有効にする
-// class User extends Authenticatable implements MustVerifyEmail
-class User extends Authenticatable
+
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 

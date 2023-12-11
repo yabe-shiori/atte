@@ -18,9 +18,11 @@ class EndWorkTimeSetNotification extends Notification
         $this->attendance = $attendance;
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
+    public function via($notifiable)
+    {
+        return ['mail'];
+    }
+
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
@@ -31,11 +33,6 @@ class EndWorkTimeSetNotification extends Notification
             ->line('アプリケーションをご利用いただきありがとうございます。');
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray($notifiable): array
     {
         return [

@@ -34,7 +34,6 @@ class AttendanceController extends Controller
         $todayAttendance = $user->attendance()->whereDate('work_date', $now->toDateString())->first();
 
         if (!$todayAttendance) {
-
             $attendance = new Attendance();
             $attendance->user_id = $user->id;
             $attendance->start_time = $now;
@@ -43,25 +42,23 @@ class AttendanceController extends Controller
 
             // 出勤時刻が深夜をまたいでいる場合、分割して保存
             if ($attendance->crossed_midnight) {
-
                 $attendance->work_date = $now->toDateString();
-                $attendance->end_time = $now->copy()->endOfDay();
+                // 変更: 深夜0時になるように設定
+                $attendance->end_time = $now->copy()->startOfDay()->addDay();
                 $attendance->save();
 
-                $startOfNextDay = $now->copy()->addDay()->startOfDay();
-
+                // 新しいレコードを作成
                 $nextDayAttendance = new Attendance();
                 $nextDayAttendance->user_id = $user->id;
-                $nextDayAttendance->start_time = $startOfNextDay;
-                $nextDayAttendance->work_date = $startOfNextDay->toDateString();
+                // 変更: 次の日の出勤開始時間を設定
+                $nextDayAttendance->start_time = $attendance->end_time;
+                $nextDayAttendance->work_date = $attendance->end_time->toDateString();
                 $nextDayAttendance->save();
 
                 return redirect()->route('dashboard')->with('message', '出勤しました！');
             } else {
-
                 $attendance->work_date = $now->toDateString();
                 $attendance->save();
-
                 return redirect()->route('dashboard')->with('message', '出勤しました！');
             }
         }
@@ -116,14 +113,15 @@ class AttendanceController extends Controller
     {
         $today = $now->toDateString();
         $startOfToday = $now->copy()->startOfDay();
+        $endOfToday = $now->copy()->endOfDay();
         $startOfTomorrow = $now->copy()->addDay()->startOfDay();
 
         return $user->attendance()
             ->whereDate('work_date', $today)
-            ->where(function ($query) use ($startOfToday, $startOfTomorrow) {
+            ->where(function ($query) use ($startOfToday, $endOfToday, $startOfTomorrow) {
                 $query->where('start_time', '<', $startOfToday)
-                    ->orWhere(function ($query) use ($startOfTomorrow) {
-                        $query->where('end_time', '>=', $startOfTomorrow)
+                    ->orWhere(function ($query) use ($endOfToday, $startOfTomorrow) {
+                        $query->where('end_time', '>', $endOfToday)
                             ->orWhereNull('end_time');
                     });
             })

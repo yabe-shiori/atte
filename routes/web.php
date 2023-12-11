@@ -13,12 +13,9 @@ use App\Http\Controllers\AdminUserController;
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
-// ->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-//メール認証を一時的に無効にしています
-// Route::middleware(['auth', 'verified'])->group(function () {
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [AttendanceController::class, 'index'])
         ->name('dashboard');
 
