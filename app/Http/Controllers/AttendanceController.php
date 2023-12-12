@@ -43,14 +43,11 @@ class AttendanceController extends Controller
             // 出勤時刻が深夜をまたいでいる場合、分割して保存
             if ($attendance->crossed_midnight) {
                 $attendance->work_date = $now->toDateString();
-                // 変更: 深夜0時になるように設定
-                $attendance->end_time = $now->copy()->startOfDay()->addDay();
+                $attendance->end_time = $now->copy()->endOfDay()->addSecond();
                 $attendance->save();
 
-                // 新しいレコードを作成
                 $nextDayAttendance = new Attendance();
                 $nextDayAttendance->user_id = $user->id;
-                // 変更: 次の日の出勤開始時間を設定
                 $nextDayAttendance->start_time = $attendance->end_time;
                 $nextDayAttendance->work_date = $attendance->end_time->toDateString();
                 $nextDayAttendance->save();

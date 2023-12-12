@@ -10,7 +10,7 @@ use App\Notifications\EndWorkTimeSetNotification;
 class CheckAndEndWork extends Command
 {
     protected $signature = 'check:endwork';
-    protected $description = 'Check and end work for users who have been working for more than 10 hours without a recorded end time.';
+    protected $description = '10時間以上働いているユーザーをチェックして勤務終了時刻を自動で設定します。';
 
     public function handle()
     {
@@ -42,7 +42,6 @@ class CheckAndEndWork extends Command
                 $attendance->save();
             }
 
-            // ユーザーに通知
             $attendance->user->notify(new EndWorkTimeSetNotification($attendance));
 
             $this->info('Work ended automatically for user: ' . $attendance->user->name);
