@@ -46,10 +46,11 @@ class AttendanceController extends Controller
                 $attendance->end_time = $now->copy()->endOfDay()->addSecond();
                 $attendance->save();
 
+                // 翌日のための新しいレコードを作成
                 $nextDayAttendance = new Attendance();
                 $nextDayAttendance->user_id = $user->id;
-                $nextDayAttendance->start_time = $attendance->end_time;
-                $nextDayAttendance->work_date = $attendance->end_time->toDateString();
+                $nextDayAttendance->start_time = $now->copy()->addDay()->startOfDay();
+                $nextDayAttendance->work_date = $now->copy()->addDay()->toDateString();
                 $nextDayAttendance->save();
 
                 return redirect()->route('dashboard')->with('message', '出勤しました！');

@@ -12,6 +12,13 @@ class CheckAndEndWork extends Command
     protected $signature = 'check:endwork';
     protected $description = '10時間以上働いているユーザーをチェックして勤務終了時刻を自動で設定します。';
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->output = new \Symfony\Component\Console\Output\ConsoleOutput();
+    }
+
     public function handle()
     {
         $this->info('Checking and ending work...');
