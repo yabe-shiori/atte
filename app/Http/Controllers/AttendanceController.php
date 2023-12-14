@@ -31,36 +31,31 @@ class AttendanceController extends Controller
     {
         $now = now();
         $user = Auth::user();
+
+        if ($this->hasUnfinishedWork($user)) {
+            return redirect()->route('dashboard')->with('error', '終了していない勤務があります。');
+        }
+
         $todayAttendance = $user->attendance()->whereDate('work_date', $now->toDateString())->first();
 
         if (!$todayAttendance) {
             $attendance = new Attendance();
             $attendance->user_id = $user->id;
             $attendance->start_time = $now;
+            $attendance->work_date = $now->toDateString();
+            $attendance->save();
 
-            $attendance->crossed_midnight = $this->hasCrossedMidnight($user, $now);
-
-            // 出勤時刻が深夜をまたいでいる場合、分割して保存
-            if ($attendance->crossed_midnight) {
-                $attendance->work_date = $now->toDateString();
-                $attendance->end_time = $now->copy()->endOfDay()->addSecond();
-                $attendance->save();
-
-                // 翌日のための新しいレコードを作成
-                $nextDayAttendance = new Attendance();
-                $nextDayAttendance->user_id = $user->id;
-                $nextDayAttendance->start_time = $now->copy()->addDay()->startOfDay();
-                $nextDayAttendance->work_date = $now->copy()->addDay()->toDateString();
-                $nextDayAttendance->save();
-
-                return redirect()->route('dashboard')->with('message', '出勤しました！');
-            } else {
-                $attendance->work_date = $now->toDateString();
-                $attendance->save();
-                return redirect()->route('dashboard')->with('message', '出勤しました！');
-            }
+            return redirect()->route('dashboard')->with('message', '出勤しました！');
         }
+
         return redirect()->route('dashboard')->with('error', '本日の勤務は既に開始しています。');
+    }
+
+    private function hasUnfinishedWork($user)
+    {
+        return $user->attendance()
+            ->whereNull('end_time')
+            ->exists();
     }
 
     public function endWork()
@@ -82,13 +77,54 @@ class AttendanceController extends Controller
                 }
             }
 
-            $todayAttendance->end_time = $now;
-            $todayAttendance->save();
+            $crossedMidnight = $this->hasCrossedMidnight($user, $now);
+
+            if ($crossedMidnight) {
+                $this->splitMidnight($user, $todayAttendance, $now);
+            } else {
+                if ($todayAttendance->end_time === null) {
+                    $todayAttendance->end_time = $now;
+                    $todayAttendance->save();
+                }
+            }
 
             return redirect()->route('dashboard')->with('message', $user->name . 'さん、お疲れさまでした！');
         }
 
         return redirect()->route('dashboard')->with('error', '勤務が開始されていません。');
+    }
+
+    private function splitMidnight($user, $attendance, Carbon $now)
+    {
+        // 日をまたいでいる場合のみ処理を行う
+        if ($this->hasCrossedMidnight($user, $now)) {
+            // 勤務終了時間をその日の最後の時刻である 23:59:59 に設定
+            $attendance->end_time = $now->copy()->endOfDay();
+            $attendance->save();
+
+            // 翌日のための新しいレコードを作成
+            $nextDayAttendance = new Attendance();
+            $nextDayAttendance->user_id = $user->id;
+            $nextDayAttendance->start_time = $now->copy()->startOfDay();
+            $nextDayAttendance->work_date = $now->copy()->addDay()->toDateString(); // 翌日の日付をセット
+            // 翌日の終了時刻はまだ設定しない
+            $nextDayAttendance->save();
+        } else {
+            // 日をまたいでいない場合は、現在の時刻を終了時刻として設定
+            $attendance->end_time = $now;
+            $attendance->save();
+        }
+    }
+
+    private function hasCrossedMidnight($user, Carbon $now)
+    {
+        // ユーザーが昨日働き始めて、今日もまだ働いているかどうかを確認
+        $attendanceYesterday = $user->attendance()
+            ->whereDate('work_date', $now->copy()->subDay()->toDateString())
+            ->orderBy('start_time', 'desc')
+            ->first();
+
+        return $attendanceYesterday && $attendanceYesterday->end_time == null;
     }
 
 
@@ -104,25 +140,5 @@ class AttendanceController extends Controller
             ->paginate(5);
 
         return view('attendance_list', compact('attendances', 'selectedDate', 'totalAttendances'));
-    }
-
-
-    private function hasCrossedMidnight($user, Carbon $now)
-    {
-        $today = $now->toDateString();
-        $startOfToday = $now->copy()->startOfDay();
-        $endOfToday = $now->copy()->endOfDay();
-        $startOfTomorrow = $now->copy()->addDay()->startOfDay();
-
-        return $user->attendance()
-            ->whereDate('work_date', $today)
-            ->where(function ($query) use ($startOfToday, $endOfToday, $startOfTomorrow) {
-                $query->where('start_time', '<', $startOfToday)
-                    ->orWhere(function ($query) use ($endOfToday, $startOfTomorrow) {
-                        $query->where('end_time', '>', $endOfToday)
-                            ->orWhereNull('end_time');
-                    });
-            })
-            ->exists();
     }
 }

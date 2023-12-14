@@ -32,18 +32,7 @@ class CheckAndEndWork extends Command
             $calculatedEndTime = $attendance->start_time->copy()->addHours(10);
 
             if ($attendance->crossed_midnight) {
-                $nextDayAttendance = Attendance::where('user_id', $attendance->user_id)
-                    ->whereDate('work_date', '=', $attendance->start_time->addDay()->toDateString())
-                    ->first();
-
-                if (!$nextDayAttendance) {
-                    $nextDayAttendance = new Attendance();
-                    $nextDayAttendance->user_id = $attendance->user_id;
-                    $nextDayAttendance->work_date = $attendance->start_time->addDay()->toDateString();
-                    $nextDayAttendance->start_time = $attendance->start_time->copy()->addDay()->startOfDay();
-                    $nextDayAttendance->end_time = $calculatedEndTime;
-                    $nextDayAttendance->save();
-                }
+                $this->splitMidnight($attendance, $calculatedEndTime);
             } else {
                 $attendance->end_time = $calculatedEndTime;
                 $attendance->save();
@@ -55,5 +44,24 @@ class CheckAndEndWork extends Command
         }
 
         $this->info('Check and end work process completed.');
+    }
+
+    private function splitMidnight($attendance, $calculatedEndTime)
+    {
+        $nextDayAttendance = Attendance::where('user_id', $attendance->user_id)
+            ->whereDate('work_date', '=', $attendance->start_time->addDay()->toDateString())
+            ->first();
+
+        if (!$nextDayAttendance) {
+            $nextDayAttendance = new Attendance();
+            $nextDayAttendance->user_id = $attendance->user_id;
+            $nextDayAttendance->work_date = $attendance->start_time->addDay()->toDateString();
+            $nextDayAttendance->start_time = $attendance->start_time->copy()->addDay()->startOfDay();
+            $nextDayAttendance->end_time = $calculatedEndTime;
+            $nextDayAttendance->save();
+        }
+
+        $attendance->end_time = $attendance->start_time->copy()->endOfDay();
+        $attendance->save();
     }
 }

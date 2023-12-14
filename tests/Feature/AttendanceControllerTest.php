@@ -7,6 +7,10 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Attendance;
+use App\Services\AttendanceService;
+use Carbon\Carbon;
+use App\Http\Controllers\AttendanceController;
+
 
 class AttendanceControllerTest extends TestCase
 {
