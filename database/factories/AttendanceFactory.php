@@ -13,7 +13,7 @@ class AttendanceFactory extends Factory
     protected $model = Attendance::class;
 
 
-    //過去一年間のデータを作成
+    // 過去一年間のデータを作成
     // public function definition()
     // {
     //     //ランダムで作成
@@ -42,7 +42,7 @@ class AttendanceFactory extends Factory
     //     ];
     // }
 
-    // //過去一週間のデータを作成
+    //過去一週間のデータを作成
     public function definition()
     {
         $user = User::inRandomOrder()->first();

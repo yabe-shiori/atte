@@ -19,7 +19,7 @@
                         @csrf
                         <button type="submit"
                             class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
-                            {{ (!Auth::check() || (Auth::check() && !Auth::user()->hasStartedWorkOnDate(now()->toDateString()))) ? 'text-black hover:opacity-60' : 'text-zinc-200' }}">
+    {{ !Auth::check() ||(Auth::check() &&!Auth::user()->hasStartedWorkOnDate(now()->toDateString()) &&!Auth::user()->hasStartedWorkOnDate(now()->subDay()->toDateString()))? 'text-black hover:opacity-60': 'text-zinc-200' }}">
                             勤務開始
                         </button>
                     </form>
@@ -29,23 +29,29 @@
                     <form method="post" action="{{ route('end-work') }}">
                         @csrf
                         <button type="submit"
-                            class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
-                            {{ (!Auth::check() || (Auth::check() && !Auth::user()->hasStartedWorkOnDate(now()->toDateString()))) ? 'text-zinc-300' : 'text-black hover:opacity-60' }}">
-                            勤務終了
-                        </button>
+    class="mx-2 mb-8 bg-white text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto
+    {{ Auth::check() && (Auth::user()->hasStartedWorkOnDate(now()->toDateString()) || Auth::user()->hasStartedWorkOnDate(now()->subDay()->toDateString())) && (!Auth::user()->hasEndedWorkOnDate(now()->toDateString()) || !Auth::user()->hasEndedWorkOnDate(now()->subDay()->toDateString())) ? 'text-black hover:opacity-60' : 'text-zinc-300' }}">
+    勤務終了
+</button>
                     </form>
                 </div>
 
                 @php
-                    $breakCount = Auth::user()->breakTimes()->whereDate('break_start_time', now()->toDateString())->count();
-                    $endCount = Auth::user()->breakTimes()->whereDate('break_end_time', now()->toDateString())->count();
+                    $breakCount = Auth::user()
+                        ->breakTimes()
+                        ->whereDate('break_start_time', now()->toDateString())
+                        ->count();
+                    $endCount = Auth::user()
+                        ->breakTimes()
+                        ->whereDate('break_end_time', now()->toDateString())
+                        ->count();
                 @endphp
 
                 <div class="w-full md:w-1/2">
                     <form method="post" action="{{ route('start-break') }}">
                         @csrf
                         <button type="submit"
-                            class="mx-2 mb-4 bg-white {{ ($breakCount > $endCount) ? 'text-zinc-300' : 'text-black hover:opacity-60' }}
+                            class="mx-2 mb-4 bg-white {{ $breakCount > $endCount ? 'text-zinc-300' : 'text-black hover:opacity-60' }}
                             text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto">
                             休憩開始
                         </button>
@@ -56,7 +62,7 @@
                     <form method="post" action="{{ route('end-break') }}">
                         @csrf
                         <button type="submit"
-                            class="mx-2 mb-4 bg-white {{ ($breakCount === $endCount) ? 'text-zinc-300' : 'text-black hover:opacity-60' }}
+                            class="mx-2 mb-4 bg-white {{ $breakCount === $endCount ? 'text-zinc-300' : 'text-black hover:opacity-60' }}
                             text-xl font-semibold h-56 w-full md:w-11/12 md:mx-auto">
                             休憩終了
                         </button>

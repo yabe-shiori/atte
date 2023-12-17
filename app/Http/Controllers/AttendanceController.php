@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\AttendanceService;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
@@ -77,56 +78,47 @@ class AttendanceController extends Controller
                 }
             }
 
-            $crossedMidnight = $this->hasCrossedMidnight($user, $now);
-
-            if ($crossedMidnight) {
+            if ($this->hasCrossedMidnight($user, $now)) {
                 $this->splitMidnight($user, $todayAttendance, $now);
             } else {
-                if ($todayAttendance->end_time === null) {
-                    $todayAttendance->end_time = $now;
-                    $todayAttendance->save();
-                }
+                // 勤務が日をまたいでいない場合、現在の時刻を終了時刻として記録
+                $todayAttendance->end_time = $now;
+                $todayAttendance->save();
             }
 
             return redirect()->route('dashboard')->with('message', $user->name . 'さん、お疲れさまでした！');
+        } else {
+            return redirect()->route('dashboard')->with('error', '勤務が開始されていません。');
         }
-
-        return redirect()->route('dashboard')->with('error', '勤務が開始されていません。');
     }
+
 
     private function splitMidnight($user, $attendance, Carbon $now)
     {
-        // 日をまたいでいる場合のみ処理を行う
-        if ($this->hasCrossedMidnight($user, $now)) {
-            // 勤務終了時間をその日の最後の時刻である 23:59:59 に設定
-            $attendance->end_time = $now->copy()->endOfDay();
-            $attendance->save();
+        // 前日の勤務終了時刻を23:59:59に設定
+        $attendance->end_time = $now->copy()->subDay()->endOfDay();
+        $attendance->save();
 
-            // 翌日のための新しいレコードを作成
-            $nextDayAttendance = new Attendance();
-            $nextDayAttendance->user_id = $user->id;
-            $nextDayAttendance->start_time = $now->copy()->startOfDay();
-            $nextDayAttendance->work_date = $now->copy()->addDay()->toDateString(); // 翌日の日付をセット
-            // 翌日の終了時刻はまだ設定しない
-            $nextDayAttendance->save();
-        } else {
-            // 日をまたいでいない場合は、現在の時刻を終了時刻として設定
-            $attendance->end_time = $now;
-            $attendance->save();
-        }
+        // 翌日のレコード作成
+        $nextDayAttendance = new Attendance();
+        $nextDayAttendance->user_id = $user->id;
+        $nextDayAttendance->start_time = $now->copy()->startOfDay(); // 翌日の勤務開始時刻を00:00:00に設定
+        $nextDayAttendance->end_time = $now;
+        $nextDayAttendance->work_date = $now->toDateString();
+        $nextDayAttendance->save();
     }
+
 
     private function hasCrossedMidnight($user, Carbon $now)
     {
-        // ユーザーが昨日働き始めて、今日もまだ働いているかどうかを確認
-        $attendanceYesterday = $user->attendance()
-            ->whereDate('work_date', $now->copy()->subDay()->toDateString())
-            ->orderBy('start_time', 'desc')
+        // 終了時間が未記録の最後の出勤記録を取得
+        $lastAttendance = $user->attendance()
+            ->whereNull('end_time')
+            ->orderBy('work_date', 'desc')
             ->first();
 
-        return $attendanceYesterday && $attendanceYesterday->end_time == null;
+        return $lastAttendance && $lastAttendance->work_date < $now->toDateString();
     }
-
 
     public function attendanceList(Request $request)
     {
