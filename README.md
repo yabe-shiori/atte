@@ -19,6 +19,52 @@
 - 自分の勤怠情報の把握
 - 管理者における従業員の勤怠の確認
 
+## インストール
+
+1.プロジェクトのクローン  
+`git clone https://github.com/yabe-shiori/atte.git atte`  
+  
+プロジェクトディレクトリに移動します。    
+`cd atte`  
+
+2.環境変数の設定
+.env.exampleファイルをコピーして.envファイルを作成し、必要な環境変数を設定します。  
+`cp .env.example .env`  
+
+DB_CONNECTION=mysql  
+DB_HOST=mysql  
+DB_PORT=3306  
+DB_DATABASE=atte  
+DB_USERNAME=sail  
+DB_PASSWORD=password  
+
+3.Composerパッケージのインストール  
+`composer install`
+
+4.Docker環境のセットアップ  
+laravelSailを使用してDocker環境をセットアップします。  
+`./vendor/bin/sail up -d`    
+
+5.データベースのマイグレーション  
+`./vendor/bin/sail artisan migrate`    
+
+6.アプリケーションキーの生成  
+`./vendor/bin/sail artisan key:generate`    
+
+7.Breezeのインストール  
+・laravel Breezeを使用して認証機能をセットアップします  
+`./vendor/bin/sail artisan breeze:install`    
+
+8.NPMパッケージのインストール  
+`./vendor/bin/sail npm install`    
+
+9.アセットのコンパイル  
+`./vendor/bin/sail npm run dev`        
+
+10.アプリケーションの実行  
+・Webブラウザで[http://localhost](http://localhost)にアクセスして、アプリケーションが正しく動作していることを確認します。  
+
+
 
 ## アプリケーションのURL
 []
