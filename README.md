@@ -68,9 +68,9 @@ laravelSailを使用してDocker環境をセットアップします。
 を入力して会員登録する  
   
 2.phpMyAdminにログインし、roleテーブルとrole_userテーブルに登録する。 
-- rolesテーブル
-id1 name->admin  
-id2 name->user  
+- rolesテーブル  
+id1 name->admin   
+id2 name->user    
 を挿入する。
 
 - role_userテーブルに挿入
