@@ -45,23 +45,16 @@ DB_PASSWORD=password
 laravelSailを使用してDocker環境をセットアップします。  
 `./vendor/bin/sail up -d`    
 
-5.データベースのマイグレーション  
-`./vendor/bin/sail artisan migrate`    
-
-6.アプリケーションキーの生成  
+5.アプリケーションキーの生成  
 `./vendor/bin/sail artisan key:generate`    
-
-7.Breezeのインストール  
-・laravel Breezeを使用して認証機能をセットアップします  
-`./vendor/bin/sail artisan breeze:install`    
-
-8.NPMパッケージのインストール  
+  
+6.NPMパッケージのインストール  
 `./vendor/bin/sail npm install`    
 
-9.アセットのコンパイル  
+7.アセットのコンパイル  
 `./vendor/bin/sail npm run dev`        
 
-10.アプリケーションの実行  
+8.アプリケーションの実行  
 ・Webブラウザで[http://localhost](http://localhost)にアクセスして、アプリケーションが正しく動作していることを確認します。  
 
   
@@ -85,6 +78,10 @@ user1のテスト太郎に、role_id1のadminの役割を付与する。
 
 注意事項:
 管理者としてログインする場合、上記で設定したテスト太郎さんを利用してログインすることによって管理者専用の機能が利用できます。
+
+**メール通知について**  
+MailPitを利用しています。  
+[http://localhost:8025](http://localhost:8025)にアクセスして通知メールを確認してください。  
 
 ## 機能一覧
 | 会員登録画面 |　ログイン画面 |
