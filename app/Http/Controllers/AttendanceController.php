@@ -105,16 +105,6 @@ class AttendanceController extends Controller
         }
     }
 
-    private function hasCrossedMidnight($user, Carbon $now)
-    {
-        $lastAttendance = $user->attendance()
-            ->whereNull('end_time')
-            ->orderBy('work_date', 'desc')
-            ->first();
-
-        return $lastAttendance && $lastAttendance->work_date < $now->toDateString();
-    }
-
     public function attendanceList(Request $request)
     {
         $now = now();
